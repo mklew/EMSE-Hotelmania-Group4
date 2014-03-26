@@ -1,1 +1,14 @@
 target/
+
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+.idea/*
+group4/target/*
+target/*
+**/target/*
+*.iml
+**/*.iml
