@@ -2,6 +2,9 @@ package emse.abs.hotelmania.group4;
 
 import emse.abs.hotelmania.behaviours.EmseCyclicBehaviour;
 import emse.abs.hotelmania.behaviours.MessageStatus;
+import emse.abs.hotelmania.domain.HotelAlreadyRegisteredException;
+import emse.abs.hotelmania.domain.HotelRepositoryService;
+import emse.abs.hotelmania.guice.GuiceConfigurer;
 import emse.abs.hotelmania.ontology.Hotel;
 import emse.abs.hotelmania.ontology.RegistrationRequest;
 import jade.content.Concept;
@@ -27,8 +30,11 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
 
     private final AgPlatform4 platform;
 
+    private HotelRepositoryService hotelRepositoryService;
+
     public RegistrationBehaviour (AgPlatform4 a) {
         platform = a;
+        hotelRepositoryService = GuiceConfigurer.getInjector().getInstance(HotelRepositoryService.class);
     }
 
     @Override protected List<MessageTemplate> getMessageTemplates () {
@@ -52,7 +58,7 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
                     final Hotel hotel = registrationRequest.getHotel();
 
                     try {
-                        platform.registerHotel(hotel);
+                        hotelRepositoryService.registerHotel(hotel);
                         reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                     } catch (HotelAlreadyRegisteredException e) {
                         reply.setPerformative(ACLMessage.REJECT_PROPOSAL);

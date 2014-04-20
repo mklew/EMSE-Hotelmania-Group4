@@ -1,7 +1,7 @@
 package emse.abs.hotelmania.behaviours;
 
 import com.google.common.base.Optional;
-import emse.abs.hotelmania.group4.Utils;
+import emse.abs.hotelmania.utils.Utils;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;

@@ -5,6 +5,7 @@ import emse.abs.hotelmania.behaviours.EmseSimpleBehaviour;
 import emse.abs.hotelmania.behaviours.MessageStatus;
 import emse.abs.hotelmania.ontology.Hotel;
 import emse.abs.hotelmania.ontology.RegistrationRequest;
+import emse.abs.hotelmania.utils.Utils;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;

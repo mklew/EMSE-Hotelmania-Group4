@@ -1,4 +1,4 @@
-package emse.abs.hotelmania.group4;
+package emse.abs.hotelmania.domain;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>

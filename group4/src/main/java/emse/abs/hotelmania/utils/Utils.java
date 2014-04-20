@@ -1,4 +1,4 @@
-package emse.abs.hotelmania.group4;
+package emse.abs.hotelmania.utils;
 
 import com.google.common.collect.ImmutableList;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -22,7 +22,7 @@ public class Utils {
         return dfd;
     }
 
-    static DFAgentDescription createAgentDescriptionWithNameAndType (String name, String type) {
+    public static DFAgentDescription createAgentDescriptionWithNameAndType (String name, String type) {
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setName(name);
