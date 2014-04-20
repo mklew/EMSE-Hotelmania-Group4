@@ -12,7 +12,7 @@ import jade.core.Agent;
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
  * @since 20/04/14
  */
-public abstract class HotelManiaAgent extends Agent {
+public abstract class HotelManiaAgent extends Agent implements HotelManiaAgentNames {
 
     final protected Codec codec = new SLCodec();
     final protected Ontology ontology = SharedAgentsOntology.getInstance();
@@ -25,4 +25,12 @@ public abstract class HotelManiaAgent extends Agent {
     }
 
     abstract protected void setupHotelManiaAgent ();
+
+    public Codec getCodec () {
+        return codec;
+    }
+
+    public Ontology getOntology () {
+        return ontology;
+    }
 }
