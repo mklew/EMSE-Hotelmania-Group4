@@ -118,7 +118,7 @@ public class AgHotel4 extends HotelManiaAgent {
         }
 
         @Override public void action () {
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithType(HOTELMANIA);
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithType(REGISTRATION);
             try {
                 final DFAgentDescription[] search = DFService.search(getAgent(), dfd);
                 if (search.length == 0) {

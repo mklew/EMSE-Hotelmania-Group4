@@ -28,7 +28,7 @@ public class AgPlatform4 extends HotelManiaAgent implements HotelMania {
         logger.debug("setting up agent");
         try {
             // Creates its own description
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), HOTELMANIA);
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), REGISTRATION);
             // Registers its description in the DF
             DFService.register(this, dfd);
             logger.info(getLocalName() + ": registered in the DF");

@@ -5,5 +5,5 @@ package emse.abs.hotelmania.group4;
  * @since 20/04/14
  */
 public interface HotelManiaAgentNames {
-    static final String HOTELMANIA = "HotelMania";
+    static final String REGISTRATION = "Registration";
 }
