@@ -22,7 +22,11 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
         final ACLMessage receive = getAgent().receive(Utils.messageTemplateConjunction(messageTemplates));
         final Optional<ACLMessage> aclMessageOptional = Optional.fromNullable(receive);
         if (aclMessageOptional.isPresent()) {
-            processMessage(aclMessageOptional.get());
+            final ACLMessage message = aclMessageOptional.get();
+            final MessageStatus messageStatus = processMessage(message);
+            if (messageStatus.equals(MessageStatus.NOT_PROCESSED)) {
+                getAgent().putBack(message);
+            }
         } else {
             block();
         }
@@ -30,5 +34,5 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
 
     protected abstract List<MessageTemplate> getMessageTemplates ();
 
-    protected abstract void processMessage (ACLMessage message);
+    protected abstract MessageStatus processMessage (ACLMessage message);
 }

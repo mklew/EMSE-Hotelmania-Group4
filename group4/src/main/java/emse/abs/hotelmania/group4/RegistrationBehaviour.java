@@ -1,6 +1,7 @@
 package emse.abs.hotelmania.group4;
 
 import emse.abs.hotelmania.behaviours.EmseCyclicBehaviour;
+import emse.abs.hotelmania.behaviours.MessageStatus;
 import emse.abs.hotelmania.ontology.Hotel;
 import emse.abs.hotelmania.ontology.RegistrationRequest;
 import jade.content.Concept;
@@ -38,9 +39,8 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
         return Arrays.asList(withCodec, withOntology, withRequestPerformative);
     }
 
-    @Override protected void processMessage (final ACLMessage message) {
+    @Override protected MessageStatus processMessage (final ACLMessage message) {
         final ACLMessage reply = platform.createReply(message);
-
         final int messagePerformative = message.getPerformative();
         if (messagePerformative == ACLMessage.REQUEST) {
             try {
@@ -57,9 +57,7 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
                     } catch (HotelAlreadyRegisteredException e) {
                         reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
                     }
-
                 }
-
             } catch (Codec.CodecException e) {
                 e.printStackTrace();
             } catch (OntologyException e) {
@@ -70,6 +68,7 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
             reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
         }
         getAgent().send(reply);
+        return MessageStatus.PROCESSED;
     }
 
 }

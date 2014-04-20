@@ -2,6 +2,7 @@ package emse.abs.hotelmania.group4;
 
 import com.google.common.base.Function;
 import emse.abs.hotelmania.behaviours.EmseSimpleBehaviour;
+import emse.abs.hotelmania.behaviours.MessageStatus;
 import emse.abs.hotelmania.ontology.Hotel;
 import emse.abs.hotelmania.ontology.RegistrationRequest;
 import jade.content.lang.Codec;
@@ -83,16 +84,21 @@ public class AgHotel4 extends HotelManiaAgent {
             return Arrays.asList(MessageTemplate.MatchSender(hotelMania));
         }
 
-        @Override protected void processMessage (ACLMessage message) {
+        @Override protected MessageStatus processMessage (ACLMessage message) {
             gotResponse = true;
             if (message.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
                 logger.info("Received accept proposal as registration response");
+                return MessageStatus.PROCESSED;
             } else if (message.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
                 logger.info("Received rejection as registration response");
+                return MessageStatus.PROCESSED;
             } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
                 logger.info("Received not understood as registration response");
+                return MessageStatus.PROCESSED;
             } else {
+                gotResponse = false;
                 logger.info("Received performative with code {}", message.getPerformative());
+                return MessageStatus.NOT_PROCESSED;
             }
         }
 
