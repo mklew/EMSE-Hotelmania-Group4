@@ -5,7 +5,6 @@ import com.google.common.collect.Collections2;
 import emse.abs.hotelmania.ontology.Hotel;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +28,7 @@ public class AgPlatform4 extends HotelManiaAgent implements HotelMania {
         logger.debug("setting up agent");
         try {
             // Creates its own description
-            DFAgentDescription dfd = new DFAgentDescription();
-            ServiceDescription sd = new ServiceDescription();
-            sd.setName(this.getName());
-            sd.setType(HOTELMANIA);
-            dfd.addServices(sd);
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), HOTELMANIA);
             // Registers its description in the DF
             DFService.register(this, dfd);
             logger.info(getLocalName() + ": registered in the DF");
@@ -43,7 +38,6 @@ public class AgPlatform4 extends HotelManiaAgent implements HotelMania {
 
         addBehaviour(new RegistrationBehaviour(this));
     }
-
 
     @Override
     public void registerHotel (final Hotel hotel) throws HotelAlreadyRegisteredException {
@@ -61,4 +55,5 @@ public class AgPlatform4 extends HotelManiaAgent implements HotelMania {
         }
 
     }
+
 }

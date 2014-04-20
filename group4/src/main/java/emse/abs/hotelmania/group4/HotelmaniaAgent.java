@@ -4,7 +4,9 @@ import emse.abs.hotelmania.ontology.SharedAgentsOntology;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.Ontology;
+import jade.core.AID;
 import jade.core.Agent;
+import jade.lang.acl.ACLMessage;
 
 /**
  * Base class for all hotel mania agents.
@@ -14,8 +16,8 @@ import jade.core.Agent;
  */
 public abstract class HotelManiaAgent extends Agent implements HotelManiaAgentNames {
 
-    final protected Codec codec = new SLCodec();
-    final protected Ontology ontology = SharedAgentsOntology.getInstance();
+    final private Codec codec = new SLCodec();
+    final private Ontology ontology = SharedAgentsOntology.getInstance();
 
     @Override
     protected void setup () {
@@ -32,5 +34,20 @@ public abstract class HotelManiaAgent extends Agent implements HotelManiaAgentNa
 
     public Ontology getOntology () {
         return ontology;
+    }
+
+    protected ACLMessage createMessage (AID receiver, int performative) {
+        ACLMessage msg = new ACLMessage(performative);
+        msg.addReceiver(receiver);
+        msg.setLanguage(codec.getName());
+        msg.setOntology(ontology.getName());
+        return msg;
+    }
+
+    public ACLMessage createReply (ACLMessage message) {
+        final ACLMessage reply = message.createReply();
+        reply.setLanguage(codec.getName());
+        reply.setOntology(ontology.getName());
+        return reply;
     }
 }

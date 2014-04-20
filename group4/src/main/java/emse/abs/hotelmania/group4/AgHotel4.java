@@ -1,7 +1,7 @@
 package emse.abs.hotelmania.group4;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import emse.abs.hotelmania.behaviours.EmseSimpleBehaviour;
 import emse.abs.hotelmania.ontology.Hotel;
 import emse.abs.hotelmania.ontology.RegistrationRequest;
 import jade.content.lang.Codec;
@@ -10,15 +10,16 @@ import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
@@ -41,10 +42,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
                     final AID hotelmania = dfAgentDescription.getName();
 
-                    ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-                    msg.addReceiver(hotelmania);
-                    msg.setLanguage(codec.getName());
-                    msg.setOntology(ontology.getName());
+                    ACLMessage msg = createMessage(hotelmania, ACLMessage.REQUEST);
 
                     RegistrationRequest registrationRequest = new RegistrationRequest();
                     try {
@@ -69,7 +67,7 @@ public class AgHotel4 extends HotelManiaAgent {
         }));
     }
 
-    private static class HandleRegistrationRequestResponse extends SimpleBehaviour {
+    private static class HandleRegistrationRequestResponse extends EmseSimpleBehaviour {
 
         Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -81,23 +79,20 @@ public class AgHotel4 extends HotelManiaAgent {
             this.hotelMania = aid;
         }
 
+        @Override protected List<MessageTemplate> getMessageTemplates () {
+            return Arrays.asList(MessageTemplate.MatchSender(hotelMania));
+        }
 
-        @Override public void action () {
-            final MessageTemplate messageTemplate = MessageTemplate.MatchSender(hotelMania);
-            final ACLMessage receive = getAgent().receive(messageTemplate);
-            final Optional<ACLMessage> aclMessageOptional = Optional.fromNullable(receive);
-            if (aclMessageOptional.isPresent()) {
-                gotResponse = true;
-                final ACLMessage aclMessage = aclMessageOptional.get();
-                if (aclMessage.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
-                    logger.info("Received accept proposal as registration response");
-                } else if (aclMessage.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
-                    logger.info("Received rejection as registration response");
-                } else if (aclMessage.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
-                    logger.info("Received not understood as registration response");
-                } else {
-                    logger.info("Received performative with code {}", aclMessage.getPerformative());
-                }
+        @Override protected void processMessage (ACLMessage message) {
+            gotResponse = true;
+            if (message.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
+                logger.info("Received accept proposal as registration response");
+            } else if (message.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
+                logger.info("Received rejection as registration response");
+            } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
+                logger.info("Received not understood as registration response");
+            } else {
+                logger.info("Received performative with code {}", message.getPerformative());
             }
         }
 
@@ -117,10 +112,7 @@ public class AgHotel4 extends HotelManiaAgent {
         }
 
         @Override public void action () {
-            DFAgentDescription dfd = new DFAgentDescription();
-            ServiceDescription sd = new ServiceDescription();
-            sd.setType(HOTELMANIA);
-            dfd.addServices(sd);
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithType(HOTELMANIA);
             try {
                 final DFAgentDescription[] search = DFService.search(getAgent(), dfd);
                 if (search.length == 0) {
@@ -133,5 +125,6 @@ public class AgHotel4 extends HotelManiaAgent {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
+
     }
 }
