@@ -1,5 +1,6 @@
 package emse.abs.hotelmania.group4;
 
+import com.google.inject.Inject;
 import emse.abs.hotelmania.behaviours.EmseCyclicBehaviour;
 import emse.abs.hotelmania.behaviours.MessageStatus;
 import emse.abs.hotelmania.domain.HotelAlreadyRegisteredException;
@@ -30,11 +31,12 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
 
     private final AgPlatform4 platform;
 
+    @Inject
     private HotelRepositoryService hotelRepositoryService;
 
     public RegistrationBehaviour (AgPlatform4 a) {
         platform = a;
-        hotelRepositoryService = GuiceConfigurer.getInjector().getInstance(HotelRepositoryService.class);
+        GuiceConfigurer.getInjector().injectMembers(this);
     }
 
     @Override protected List<MessageTemplate> getMessageTemplates () {
