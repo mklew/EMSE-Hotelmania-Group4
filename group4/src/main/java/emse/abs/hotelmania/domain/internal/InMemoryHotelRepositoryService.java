@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Should be thread-safe
+ *
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
  * @since 21/04/14
  */

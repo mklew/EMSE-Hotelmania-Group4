@@ -8,11 +8,9 @@ import emse.abs.hotelmania.domain.HotelRepositoryService;
 import emse.abs.hotelmania.guice.GuiceConfigurer;
 import emse.abs.hotelmania.ontology.Hotel;
 import emse.abs.hotelmania.ontology.RegistrationRequest;
-import jade.content.Concept;
-import jade.content.ContentElement;
-import jade.content.lang.Codec;
-import jade.content.onto.OntologyException;
-import jade.content.onto.basic.Action;
+import emse.abs.hotelmania.utils.ActionMessageHandler;
+import emse.abs.hotelmania.utils.MessageHandler;
+import emse.abs.hotelmania.utils.MessageMatchingChain;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;
@@ -49,34 +47,28 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
 
     @Override protected MessageStatus processMessage (final ACLMessage message) {
         final ACLMessage reply = platform.createReply(message);
-        final int messagePerformative = message.getPerformative();
-        if (messagePerformative == ACLMessage.REQUEST) {
-            try {
-                ContentElement content = getAgent().getContentManager().extractContent(message);
-                Concept action = ((Action) content).getAction();
 
-                if (action instanceof RegistrationRequest) {
-                    final RegistrationRequest registrationRequest = RegistrationRequest.class.cast(action);
-                    final Hotel hotel = registrationRequest.getHotel();
-
-                    try {
-                        hotelRepositoryService.registerHotel(hotel);
-                        reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-                    } catch (HotelAlreadyRegisteredException e) {
-                        reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
-                    }
+        final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(RegistrationRequest.class, new ActionMessageHandler<RegistrationRequest>() {
+            @Override public MessageStatus handle (RegistrationRequest action, ACLMessage message) {
+                final Hotel hotel = action.getHotel();
+                try {
+                    hotelRepositoryService.registerHotel(hotel);
+                    reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+                } catch (HotelAlreadyRegisteredException e) {
+                    reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
                 }
-            } catch (Codec.CodecException e) {
-                e.printStackTrace();
-            } catch (OntologyException e) {
-                e.printStackTrace();
+                getAgent().send(reply);
+                return MessageStatus.PROCESSED;
             }
-        } else {
-            logger.debug("unexpected message", message.toString());
-            reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-        }
-        getAgent().send(reply);
-        return MessageStatus.PROCESSED;
+        }).withDefaultHandler(new MessageHandler() {
+            @Override public MessageStatus handle (ACLMessage message) {
+                reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
+                getAgent().send(reply);
+                return MessageStatus.PROCESSED;
+            }
+        });
+
+        return messageMatchingChain.handleMessage(message);
     }
 
 }
