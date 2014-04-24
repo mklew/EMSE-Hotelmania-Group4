@@ -1,6 +1,6 @@
-package emse.abs.hotelmania.utils;
+package hotelmania.group4.utils;
 
-import emse.abs.hotelmania.behaviours.MessageStatus;
+import hotelmania.group4.behaviours.MessageStatus;
 import jade.content.Concept;
 import jade.content.ContentElement;
 import jade.content.onto.basic.Action;

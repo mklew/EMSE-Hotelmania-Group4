@@ -1,16 +1,17 @@
-package emse.abs.hotelmania.group4;
+package hotelmania.group4;
 
 import com.google.inject.Inject;
-import emse.abs.hotelmania.behaviours.EmseCyclicBehaviour;
-import emse.abs.hotelmania.behaviours.MessageStatus;
-import emse.abs.hotelmania.domain.HotelAlreadyRegisteredException;
-import emse.abs.hotelmania.domain.HotelRepositoryService;
-import emse.abs.hotelmania.guice.GuiceConfigurer;
 import emse.abs.hotelmania.ontology.Hotel;
 import emse.abs.hotelmania.ontology.RegistrationRequest;
-import emse.abs.hotelmania.utils.ActionMessageHandler;
-import emse.abs.hotelmania.utils.MessageHandler;
-import emse.abs.hotelmania.utils.MessageMatchingChain;
+import hotelmania.group4.behaviours.EmseCyclicBehaviour;
+import hotelmania.group4.behaviours.MessageStatus;
+import hotelmania.group4.domain.HotelAlreadyRegisteredException;
+import hotelmania.group4.domain.HotelRepositoryService;
+import hotelmania.group4.guice.GuiceConfigurer;
+import hotelmania.group4.platform.AgPlatform4;
+import hotelmania.group4.utils.ActionMessageHandler;
+import hotelmania.group4.utils.MessageHandler;
+import hotelmania.group4.utils.MessageMatchingChain;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;

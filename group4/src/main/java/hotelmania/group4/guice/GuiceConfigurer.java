@@ -1,8 +1,8 @@
-package emse.abs.hotelmania.guice;
+package hotelmania.group4.guice;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import emse.abs.hotelmania.domain.HotelManiaModule;
+import hotelmania.group4.domain.HotelManiaModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

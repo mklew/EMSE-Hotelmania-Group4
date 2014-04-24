@@ -1,6 +1,8 @@
-package emse.abs.hotelmania.group4;
+package hotelmania.group4.platform;
 
-import emse.abs.hotelmania.utils.Utils;
+import hotelmania.group4.HotelManiaAgent;
+import hotelmania.group4.RegistrationBehaviour;
+import hotelmania.group4.utils.Utils;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAException;

@@ -1,4 +1,4 @@
-package emse.abs.hotelmania.domain;
+package hotelmania.group4.domain;
 
 import emse.abs.hotelmania.ontology.Hotel;
 

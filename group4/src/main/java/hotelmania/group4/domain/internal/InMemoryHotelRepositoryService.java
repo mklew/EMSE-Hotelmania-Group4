@@ -1,10 +1,10 @@
-package emse.abs.hotelmania.domain.internal;
+package hotelmania.group4.domain.internal;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import emse.abs.hotelmania.domain.HotelAlreadyRegisteredException;
-import emse.abs.hotelmania.domain.HotelRepositoryService;
 import emse.abs.hotelmania.ontology.Hotel;
+import hotelmania.group4.domain.HotelAlreadyRegisteredException;
+import hotelmania.group4.domain.HotelRepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

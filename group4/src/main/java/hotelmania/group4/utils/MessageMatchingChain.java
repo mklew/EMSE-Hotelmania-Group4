@@ -1,9 +1,9 @@
-package emse.abs.hotelmania.utils;
+package hotelmania.group4.utils;
 
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import emse.abs.hotelmania.behaviours.MessageStatus;
+import hotelmania.group4.behaviours.MessageStatus;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 

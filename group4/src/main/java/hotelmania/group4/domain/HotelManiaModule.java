@@ -1,8 +1,8 @@
-package emse.abs.hotelmania.domain;
+package hotelmania.group4.domain;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import emse.abs.hotelmania.domain.internal.InMemoryHotelRepositoryService;
+import hotelmania.group4.domain.internal.InMemoryHotelRepositoryService;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>

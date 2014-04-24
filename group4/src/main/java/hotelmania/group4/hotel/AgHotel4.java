@@ -1,11 +1,12 @@
-package emse.abs.hotelmania.group4;
+package hotelmania.group4.hotel;
 
 import com.google.common.base.Function;
-import emse.abs.hotelmania.behaviours.EmseSimpleBehaviour;
-import emse.abs.hotelmania.behaviours.MessageStatus;
 import emse.abs.hotelmania.ontology.Hotel;
 import emse.abs.hotelmania.ontology.RegistrationRequest;
-import emse.abs.hotelmania.utils.Utils;
+import hotelmania.group4.HotelManiaAgent;
+import hotelmania.group4.behaviours.EmseSimpleBehaviour;
+import hotelmania.group4.behaviours.MessageStatus;
+import hotelmania.group4.utils.Utils;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;

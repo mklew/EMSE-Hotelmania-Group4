@@ -1,4 +1,4 @@
-package emse.abs.hotelmania.utils;
+package hotelmania.group4.utils;
 
 import com.google.common.collect.ImmutableList;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
