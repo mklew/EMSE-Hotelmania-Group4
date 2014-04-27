@@ -48,11 +48,11 @@ public class AgHotel4 extends HotelManiaAgent {
                     final AID hotelmania = dfAgentDescription.getName();
 
                     ACLMessage msg = createMessage(hotelmania, ACLMessage.REQUEST);
-
+                    msg.setProtocol(REGISTRATION);
                     RegistrationRequest registrationRequest = new RegistrationRequest();
                     try {
                         final Hotel hotel = new Hotel();
-                        hotel.setHotel_name("hotel4"); // TODO extract that
+                        hotel.setHotel_name("Hotel4"); // TODO extract that
                         registrationRequest.setHotel(hotel);
 
                         // As it is an action and the encoding language the SL, it must be wrapped
