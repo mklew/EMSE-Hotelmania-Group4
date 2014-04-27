@@ -7,6 +7,8 @@ import jade.content.onto.Ontology;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all hotel mania agents.
@@ -15,6 +17,8 @@ import jade.lang.acl.ACLMessage;
  * @since 20/04/14
  */
 public abstract class HotelManiaAgent extends Agent implements HotelManiaAgentNames {
+
+    private final static Logger logger = LoggerFactory.getLogger(HotelManiaAgent.class);
 
     final private Codec codec = new SLCodec();
     final private Ontology ontology = SharedAgentsOntology.getInstance();
@@ -49,5 +53,10 @@ public abstract class HotelManiaAgent extends Agent implements HotelManiaAgentNa
         reply.setLanguage(codec.getName());
         reply.setOntology(ontology.getName());
         return reply;
+    }
+
+    public void sendMessage (ACLMessage message) {
+        logger.debug("Sending message with performative {} and message is: {}", message.getPerformative(), message.toString());
+        send(message);
     }
 }

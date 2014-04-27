@@ -6,6 +6,8 @@ import emse.abs.hotelmania.ontology.RegistrationRequest;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.behaviours.EmseSimpleBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
+import hotelmania.group4.utils.MessageHandler;
+import hotelmania.group4.utils.MessageMatchingChain;
 import hotelmania.group4.utils.Utils;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -57,8 +59,8 @@ public class AgHotel4 extends HotelManiaAgent {
                         // into an Action
                         Action agAction = new Action(hotelmania, registrationRequest);
                         getContentManager().fillContent(msg, agAction);
-                        addBehaviour(new HandleRegistrationRequestResponse(hotelmania));
-                        send(msg);
+                        addBehaviour(new HandleRegistrationRequestResponse(AgHotel4.this, hotelmania));
+                        sendMessage(msg);
                     } catch (Codec.CodecException e) {
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     } catch (OntologyException e) {
@@ -78,30 +80,39 @@ public class AgHotel4 extends HotelManiaAgent {
 
         private boolean gotResponse = false;
 
-        public HandleRegistrationRequestResponse (AID aid) {
+        public HandleRegistrationRequestResponse (AgHotel4 agHotel4, AID aid) {
+            super(agHotel4);
             this.hotelMania = aid;
         }
+
 
         @Override protected List<MessageTemplate> getMessageTemplates () {
             return Arrays.asList(MessageTemplate.MatchSender(hotelMania));
         }
 
         @Override protected MessageStatus processMessage (ACLMessage message) {
-            gotResponse = true;
-            if (message.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
-                logger.info("Received accept proposal as registration response");
-                return MessageStatus.PROCESSED;
-            } else if (message.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
-                logger.info("Received rejection as registration response");
-                return MessageStatus.PROCESSED;
-            } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
-                logger.info("Received not understood as registration response");
-                return MessageStatus.PROCESSED;
-            } else {
-                gotResponse = false;
-                logger.info("Received performative with code {}", message.getPerformative());
-                return MessageStatus.NOT_PROCESSED;
-            }
+            final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withMessageHandler(new MessageHandler() {
+                @Override public MessageStatus handle (ACLMessage message) {
+                    if (message.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
+                        logger.info("Received accept proposal as registration response");
+                        return MessageStatus.PROCESSED;
+                    } else if (message.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
+                        logger.info("Received rejection as registration response");
+                        return MessageStatus.PROCESSED;
+                    } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
+                        logger.info("Received not understood as registration response");
+                        return MessageStatus.PROCESSED;
+                    } else {
+                        gotResponse = false;
+                        final ACLMessage reply = getHotelManiaAgent().createReply(message);
+                        reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
+                        logger.info("Received unexpected message with performative with code {}. Replying with NOT_UNDERSTOOD", message.getPerformative());
+                        sendMessage(reply);
+                        return MessageStatus.PROCESSED;
+                    }
+                }
+            });
+            return messageMatchingChain.handleMessage(message);
         }
 
         @Override public boolean done () {

@@ -34,6 +34,7 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
     private HotelRepositoryService hotelRepositoryService;
 
     public RegistrationBehaviour (AgPlatform4 a) {
+        super(a);
         platform = a;
         GuiceConfigurer.getInjector().injectMembers(this);
     }

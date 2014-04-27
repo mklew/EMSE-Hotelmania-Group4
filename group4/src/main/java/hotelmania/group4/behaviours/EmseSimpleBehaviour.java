@@ -1,6 +1,8 @@
 package hotelmania.group4.behaviours;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.utils.Utils;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -15,6 +17,14 @@ import java.util.List;
  * @since 20/04/14
  */
 public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
+
+    private HotelManiaAgent agent;
+
+    public EmseSimpleBehaviour (HotelManiaAgent agent) {
+        super(agent);
+        Preconditions.checkNotNull(agent);
+        this.agent = agent;
+    }
 
     @Override
     public void action () {
@@ -35,4 +45,12 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
     protected abstract List<MessageTemplate> getMessageTemplates ();
 
     protected abstract MessageStatus processMessage (ACLMessage message);
+
+    protected HotelManiaAgent getHotelManiaAgent () {
+        return agent;
+    }
+
+    protected void sendMessage (ACLMessage message) {
+        getHotelManiaAgent().sendMessage(message);
+    }
 }

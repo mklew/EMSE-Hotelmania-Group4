@@ -19,6 +19,8 @@ public class MessageMatchingChain {
 
     private List<ActionMatcher<?>> actionMatchers = new ArrayList<ActionMatcher<?>>();
 
+    private List<MessageHandler> messageProcessors = new ArrayList<MessageHandler>();
+
     private Optional<MessageHandler> defaultHandler = Optional.absent();
 
     public MessageMatchingChain (Agent agent) {
@@ -37,12 +39,27 @@ public class MessageMatchingChain {
         return this;
     }
 
+    public MessageMatchingChain withMessageHandler (MessageHandler messageHandler) {
+        Preconditions.checkNotNull(messageHandler);
+        messageProcessors.add(messageHandler);
+        return this;
+    }
+
     public MessageStatus handleMessage (ACLMessage message) {
         MessageStatus messageStatus = MessageStatus.NOT_PROCESSED;
         for (ActionMatcher<?> actionMatcher : actionMatchers) {
             messageStatus = actionMatcher.tryToHandle(message);
             if (messageStatus.equals(MessageStatus.PROCESSED)) {
                 break;
+            }
+        }
+
+        if (messageStatus.equals(MessageStatus.NOT_PROCESSED)) {
+            for (MessageHandler processor : messageProcessors) {
+                messageStatus = processor.handle(message);
+                if (messageStatus.equals(MessageStatus.PROCESSED)) {
+                    break;
+                }
             }
         }
 
