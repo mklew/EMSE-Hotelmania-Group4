@@ -34,9 +34,9 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
     public void action () {
         final List<MessageTemplate> messageTemplates = getMessageTemplates();
         final ACLMessage receive = getAgent().receive(Utils.messageTemplateConjunction(messageTemplates));
-        logger.debug("Received message {}", receive.toString());
         final Optional<ACLMessage> aclMessageOptional = Optional.fromNullable(receive);
         if (aclMessageOptional.isPresent()) {
+            logger.debug("Received message {}", receive.toString());
             final ACLMessage message = aclMessageOptional.get();
             final MessageStatus messageStatus = processMessage(message);
             if (messageStatus.equals(MessageStatus.NOT_PROCESSED)) {
