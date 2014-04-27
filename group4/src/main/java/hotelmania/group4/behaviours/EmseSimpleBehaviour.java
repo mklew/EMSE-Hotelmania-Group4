@@ -7,6 +7,8 @@ import hotelmania.group4.utils.Utils;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ import java.util.List;
  * @since 20/04/14
  */
 public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmseSimpleBehaviour.class);
 
     private HotelManiaAgent agent;
 
@@ -30,11 +34,13 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
     public void action () {
         final List<MessageTemplate> messageTemplates = getMessageTemplates();
         final ACLMessage receive = getAgent().receive(Utils.messageTemplateConjunction(messageTemplates));
+        logger.debug("Received message {}", receive.toString());
         final Optional<ACLMessage> aclMessageOptional = Optional.fromNullable(receive);
         if (aclMessageOptional.isPresent()) {
             final ACLMessage message = aclMessageOptional.get();
             final MessageStatus messageStatus = processMessage(message);
             if (messageStatus.equals(MessageStatus.NOT_PROCESSED)) {
+                logger.debug("Message has not been processed. Putting it back to message queue for other behaviours");
                 getAgent().putBack(message);
             }
         } else {
