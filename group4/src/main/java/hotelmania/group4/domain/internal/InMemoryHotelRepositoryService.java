@@ -2,9 +2,9 @@ package hotelmania.group4.domain.internal;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import emse.abs.hotelmania.ontology.Hotel;
 import hotelmania.group4.domain.HotelAlreadyRegisteredException;
 import hotelmania.group4.domain.HotelRepositoryService;
+import hotelmania.ontology.Hotel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

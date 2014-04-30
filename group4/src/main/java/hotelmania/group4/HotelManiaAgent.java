@@ -1,6 +1,6 @@
 package hotelmania.group4;
 
-import emse.abs.hotelmania.ontology.SharedAgentsOntology;
+import hotelmania.ontology.SharedAgentsOntology;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.Ontology;

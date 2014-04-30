@@ -1,8 +1,6 @@
 package hotelmania.group4;
 
 import com.google.inject.Inject;
-import emse.abs.hotelmania.ontology.Hotel;
-import emse.abs.hotelmania.ontology.RegistrationRequest;
 import hotelmania.group4.behaviours.EmseCyclicBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.domain.HotelAlreadyRegisteredException;
@@ -12,6 +10,8 @@ import hotelmania.group4.platform.AgPlatform4;
 import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
+import hotelmania.ontology.Hotel;
+import hotelmania.ontology.RegistrationRequest;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;

@@ -1,6 +1,7 @@
 package hotelmania.group4.domain;
 
-import emse.abs.hotelmania.ontology.Hotel;
+
+import hotelmania.ontology.Hotel;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
