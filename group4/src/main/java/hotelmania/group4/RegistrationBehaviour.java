@@ -55,9 +55,9 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
                 final Hotel hotel = action.getHotel();
                 try {
                     hotelRepositoryService.registerHotel(hotel);
-                    reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+                    reply.setPerformative(ACLMessage.AGREE);
                 } catch (HotelAlreadyRegisteredException e) {
-                    reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+                    reply.setPerformative(ACLMessage.REFUSE);
                 }
                 getAgent().send(reply);
                 return MessageStatus.PROCESSED;

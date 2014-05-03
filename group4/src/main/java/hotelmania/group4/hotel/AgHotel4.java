@@ -93,11 +93,11 @@ public class AgHotel4 extends HotelManiaAgent {
         @Override protected MessageStatus processMessage (ACLMessage message) {
             final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withMessageHandler(new MessageHandler() {
                 @Override public MessageStatus handle (ACLMessage message) {
-                    if (message.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
-                        logger.info("Received accept proposal as registration response");
+                    if (message.getPerformative() == ACLMessage.AGREE) {
+                        logger.info("Received agree as registration response");
                         return MessageStatus.PROCESSED;
-                    } else if (message.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
-                        logger.info("Received rejection as registration response");
+                    } else if (message.getPerformative() == ACLMessage.REFUSE) {
+                        logger.info("Received refuse as registration response");
                         return MessageStatus.PROCESSED;
                     } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
                         logger.info("Received not understood as registration response");
