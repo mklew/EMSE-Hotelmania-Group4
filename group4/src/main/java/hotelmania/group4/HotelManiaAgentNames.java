@@ -7,9 +7,6 @@ package hotelmania.group4;
  */
 public interface HotelManiaAgentNames {
     static final String REGISTRATION = "Registration";
-<<<<<<< HEAD
     static final String SIGNCONTRACT = "SignContract";
-=======
     static final String SUBSCRIBETODAYEVENT = "SubscribeToDayEvent";
->>>>>>> ede44ad0a4816a5c86112dd7d8d05704c50ae7db
 }
