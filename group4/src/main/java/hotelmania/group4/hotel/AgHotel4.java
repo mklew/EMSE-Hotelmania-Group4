@@ -40,6 +40,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
     @Override
     protected void setupHotelManiaAgent () {
+        System.out.println(getLocalName()+": HAS ENTERED");
 
         logger.debug("setting up agent");
 
@@ -76,7 +77,7 @@ public class AgHotel4 extends HotelManiaAgent {
             }
         }));
 
-        // adding the SingContract behaviour for interacting with Agency
+        // adding the SingContract behaviour for interacting with agency
         //addBehaviour(new SignContract());
         addBehaviour(new SearchForAgency(this, new Function<DFAgentDescription[], Object>() {
             @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
