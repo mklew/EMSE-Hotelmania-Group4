@@ -34,8 +34,12 @@ import java.util.Vector;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
+<<<<<<< HEAD
  * @author Alberth Montero <alberthm@gmail.com>
  *
+=======
+ * @author Tahir <tahircheema30@gmail.com>
+>>>>>>> d0f448e65aa2cb1ad024b9454e4621df6d7dc035
  * @since 20/04/14
  */
 public class AgHotel4 extends HotelManiaAgent {
@@ -312,12 +316,15 @@ public class AgHotel4 extends HotelManiaAgent {
                 @Override public MessageStatus handle (ACLMessage message) {
                     if (message.getPerformative() == ACLMessage.AGREE) {
                         logger.info("Received agree as SignContract response");
+                        gotResponse = true;
                         return MessageStatus.PROCESSED;
                     } else if (message.getPerformative() == ACLMessage.REFUSE) {
                         logger.info("Received refuse as SignContract response");
+                        gotResponse = true;
                         return MessageStatus.PROCESSED;
                     } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
                         logger.info("Received not understood as SignContract response");
+                        gotResponse = true;
                         return MessageStatus.PROCESSED;
                     } else {
                         gotResponse = false;

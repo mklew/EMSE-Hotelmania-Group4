@@ -59,6 +59,12 @@ public class SignContractBehaviour extends EmseCyclicBehaviour {
                     getAgent().send(reply);
                     logger.info("Sent REFUSE as a SignContract response");
                 }
+                if (action.getContract().getRecepcionist_experienced() == 3)
+                {
+                    reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
+                    getAgent().send(reply);
+                    logger.info("Sent NOT_UNDERSTOOD as a SignContract response");
+                }
                 return MessageStatus.PROCESSED;
             }
         }).withDefaultHandler(new MessageHandler() {
