@@ -31,6 +31,7 @@ import java.util.List;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
+ * @author Tahir <tahircheema30@gmail.com>
  * @since 20/04/14
  */
 public class AgHotel4 extends HotelManiaAgent {
@@ -254,12 +255,15 @@ public class AgHotel4 extends HotelManiaAgent {
                 @Override public MessageStatus handle (ACLMessage message) {
                     if (message.getPerformative() == ACLMessage.AGREE) {
                         logger.info("Received agree as SignContract response");
+                        gotResponse = true;
                         return MessageStatus.PROCESSED;
                     } else if (message.getPerformative() == ACLMessage.REFUSE) {
                         logger.info("Received refuse as SignContract response");
+                        gotResponse = true;
                         return MessageStatus.PROCESSED;
                     } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
                         logger.info("Received not understood as SignContract response");
+                        gotResponse = true;
                         return MessageStatus.PROCESSED;
                     } else {
                         gotResponse = false;
