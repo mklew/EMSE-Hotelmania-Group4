@@ -19,6 +19,8 @@ public class AgPlatform4 extends HotelManiaAgent {
 
     @Override
     protected void setupHotelManiaAgent () {
+        System.out.println(getLocalName()+": HAS ENTERED");
+
         logger.debug("setting up agent");
         try {
             // Creates its own description

@@ -38,6 +38,8 @@ public class AgSimulator4 extends HotelManiaAgent {
 
     @Override
     protected void setupHotelManiaAgent () {
+        System.out.println(getLocalName()+": HAS ENTERED");
+
         logger.debug("setting up agent");
         try {
             // Creates its own description
@@ -51,6 +53,9 @@ public class AgSimulator4 extends HotelManiaAgent {
 
         //addBehaviour(new RegistrationBehaviour(this));
         //addBehaviour(new SubscribeToDayEvent());
+
+
+
 
         addBehaviour(new TickerBehaviour(this, 10000) {
 

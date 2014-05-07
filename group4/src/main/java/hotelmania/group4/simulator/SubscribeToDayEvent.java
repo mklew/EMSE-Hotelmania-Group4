@@ -25,8 +25,10 @@ import java.util.List;
  * @author Alberth Montero <alberthm@gmail.com>
  * @since 20/04/14
  */
-public class SubscribeToDayEvent extends TicketBehaviour {
-
+public class SubscribeToDayEvent {
+/*
             protected void onTick() {
                 // perform operation Y
-            } }
+            }*/
+
+}
