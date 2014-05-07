@@ -23,17 +23,25 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.proto.AchieveREInitiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Date;
+import java.util.Vector;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
+ * @author Alberth Montero <alberthm@gmail.com>
+ *
  * @since 20/04/14
  */
 public class AgHotel4 extends HotelManiaAgent {
+
+    // Added for simulator
+    private int nResponders;
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -124,7 +132,56 @@ public class AgHotel4 extends HotelManiaAgent {
             }
         }));
 
+
+        //MUST BE MODIFIED***************************************************||||||||
+        // Read names of responders as arguments
+        Object[] args = getArguments();
+
+        if (args != null && args.length > 0) {
+            nResponders = args.length;
+            System.out.println("Requesting dummy-action to "+nResponders+" responders.");
+
+            // Fill the REQUEST message
+            // Added behaviour for the Simulator SUBSCRIBETODAYEVENT
+            ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
+            for (int i = 0; i < args.length; ++i) {
+                msg.addReceiver(new AID((String) args[i], AID.ISLOCALNAME));
+            }
+            msg.setProtocol(SUBSCRIBETODAYEVENT);
+            // We want to receive a reply in 10 secs
+            msg.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
+            msg.setContent("dummy-action");
+            // Print on screen SUSCRIBE DAY EVENT
+            System.out.println(getLocalName()+": SUSCRIBE DayEvent");
+        addBehaviour(new AchieveREInitiator(this, msg) {
+            protected void handleInform(ACLMessage inform) {
+                System.out.println(getLocalName()+": received AGREE from "+inform.getSender().getName());
+                System.out.println(getLocalName()+": Inform received from "+inform.getSender().getName()+"date");
+            }
+            protected void handleRefuse(ACLMessage refuse) {
+                System.out.println(getLocalName()+": received REFUSE from "+refuse.getSender().getName());
+                nResponders--;
+            }
+            protected void handleFailure(ACLMessage failure) {
+                if (failure.getSender().equals(myAgent.getAMS())) {
+                    // FAILURE notification from the JADE runtime: the receiver
+                    // does not exist
+                    System.out.println("Simulator does not exist");
+                }
+                else {
+                    System.out.println("Agent "+failure.getSender().getName()+" failed to perform the requested action");
+                }
+            }
+            protected void handleAllResultNotifications(Vector notifications) {
+                if (notifications.size() < nResponders) {
+                    // Some responder didn't reply within the specified timeout
+                    System.out.println("Timeout expired: missing "+(nResponders - notifications.size())+" responses");
+                }
+            }
+        } );
     }
+        else {
+            System.out.println("No responder specified.");}}
 
 
     private static class HandleRegistrationRequestResponse extends EmseSimpleBehaviour {

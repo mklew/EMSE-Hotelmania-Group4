@@ -1,18 +1,13 @@
-package hotelmania.group4.Agency;
+package hotelmania.group4.agency;
 
 import com.google.inject.Inject;
 import hotelmania.group4.behaviours.EmseCyclicBehaviour;
-import hotelmania.group4.behaviours.EmseSimpleBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
-import hotelmania.group4.domain.HotelAlreadyRegisteredException;
 import hotelmania.group4.domain.HotelRepositoryService;
 import hotelmania.group4.guice.GuiceConfigurer;
-import hotelmania.group4.platform.AgPlatform4;
 import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
-import hotelmania.ontology.Hotel;
-import hotelmania.ontology.RegistrationRequest;
 import hotelmania.ontology.SignContract;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
