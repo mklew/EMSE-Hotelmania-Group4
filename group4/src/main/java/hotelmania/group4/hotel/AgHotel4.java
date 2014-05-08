@@ -22,12 +22,8 @@ import java.util.Date;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
- *         <<<<<<< HEAD
  * @author Alberth Montero <alberthm@gmail.com>
- *         <p/>
- *         =======
  * @author Tahir <tahircheema30@gmail.com>
- *         >>>>>>> d0f448e65aa2cb1ad024b9454e4621df6d7dc035
  * @since 20/04/14
  */
 public class AgHotel4 extends HotelManiaAgent {
