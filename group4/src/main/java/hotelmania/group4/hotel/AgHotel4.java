@@ -7,10 +7,7 @@ import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
 import hotelmania.group4.utils.Utils;
-import hotelmania.ontology.Contract;
-import hotelmania.ontology.Hotel;
-import hotelmania.ontology.RegistrationRequest;
-import hotelmania.ontology.SignContract;
+import hotelmania.ontology.*;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
@@ -43,9 +40,6 @@ import java.util.Vector;
  * @since 20/04/14
  */
 public class AgHotel4 extends HotelManiaAgent {
-
-    // Added for simulator
-    private int nResponders;
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -83,6 +77,60 @@ public class AgHotel4 extends HotelManiaAgent {
                     } catch (OntologyException e) {
                         e.printStackTrace();
                     }
+                }
+                return null;
+            }
+        }));
+
+        // adding the SubscribeToDayEvent behaviour for interacting with Simulator
+        //addBehaviour(SubscribeToDayEvent());
+        addBehaviour(new SubscribeToDayEvent(this, new Function<DFAgentDescription[], Object>() {
+            @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
+
+                if (dfAgentDescriptions.length > 1) {
+                    logger.error("More than 1 simulator found");
+                } else {
+                    final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
+                    final AID simulator = dfAgentDescription.getName();
+
+                    ACLMessage msg = createMessage(simulator, ACLMessage.SUBSCRIBE);
+                    msg.setProtocol(SUBSCRIBETODAYEVENT);
+                    // We want to receive a reply in 10 secs
+                    msg.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
+                    msg.setContent("SubscribeToDayEvent");
+                    //SubscribeToDayEvent subscribeToDayEvent = new SubscribeToDayEvent();
+                    //SignContract signContract = new SignContract();
+                   //try {
+                        addBehaviour(new AchieveREInitiator(AgHotel4.this, msg) {
+                            protected void handleInform(ACLMessage inform) {
+                                System.out.println("Agent "+inform.getSender().getName()+" successfully performed the requested action");
+                            }
+                            protected void handleRefuse(ACLMessage refuse) {
+                                System.out.println("Agent "+refuse.getSender().getName()+" refused to perform the requested action");
+                            }
+                            protected void handleFailure(ACLMessage failure) {
+                                if (failure.getSender().equals(myAgent.getAMS())) {
+                                    // FAILURE notification from the JADE runtime: the receiver
+                                    // does not exist
+                                    System.out.println("Responder does not exist");
+                                }
+                                else {
+                                    System.out.println("Agent "+failure.getSender().getName()+" failed to perform the requested action");
+                                }
+                            }
+                        } );
+
+                        // As it is an action and the encoding language the SL, it must be wrapped
+                        // into an Action
+                        /*Action agentAction = new Action(simulator, subscribeToDayEvent);
+                        getContentManager().fillContent(newMessage, agentAction);
+                        addBehaviour(new HandleSignContractResponse(AgHotel4.this, simulator));
+                        sendMessage(newMessage);
+                    } catch ( e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    } catch (OntologyException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }*/
                 }
                 return null;
             }
@@ -135,57 +183,7 @@ public class AgHotel4 extends HotelManiaAgent {
                 return null;
             }
         }));
-
-
-        //MUST BE MODIFIED***************************************************||||||||
-        // Read names of responders as arguments
-        Object[] args = getArguments();
-
-        if (args != null && args.length > 0) {
-            nResponders = args.length;
-            System.out.println("Requesting dummy-action to "+nResponders+" responders.");
-
-            // Fill the REQUEST message
-            // Added behaviour for the Simulator SUBSCRIBETODAYEVENT
-            ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
-            for (int i = 0; i < args.length; ++i) {
-                msg.addReceiver(new AID((String) args[i], AID.ISLOCALNAME));
-            }
-            msg.setProtocol(SUBSCRIBETODAYEVENT);
-            // We want to receive a reply in 10 secs
-            msg.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
-            msg.setContent("dummy-action");
-            // Print on screen SUSCRIBE DAY EVENT
-            System.out.println(getLocalName()+": SUSCRIBE DayEvent");
-        addBehaviour(new AchieveREInitiator(this, msg) {
-            protected void handleInform(ACLMessage inform) {
-                System.out.println(getLocalName()+": received AGREE from "+inform.getSender().getName());
-                System.out.println(getLocalName()+": Inform received from "+inform.getSender().getName()+"date");
-            }
-            protected void handleRefuse(ACLMessage refuse) {
-                System.out.println(getLocalName()+": received REFUSE from "+refuse.getSender().getName());
-                nResponders--;
-            }
-            protected void handleFailure(ACLMessage failure) {
-                if (failure.getSender().equals(myAgent.getAMS())) {
-                    // FAILURE notification from the JADE runtime: the receiver
-                    // does not exist
-                    System.out.println("Simulator does not exist");
-                }
-                else {
-                    System.out.println("Agent "+failure.getSender().getName()+" failed to perform the requested action");
-                }
-            }
-            protected void handleAllResultNotifications(Vector notifications) {
-                if (notifications.size() < nResponders) {
-                    // Some responder didn't reply within the specified timeout
-                    System.out.println("Timeout expired: missing "+(nResponders - notifications.size())+" responses");
-                }
-            }
-        } );
     }
-        else {
-            System.out.println("No responder specified.");}}
 
 
     private static class HandleRegistrationRequestResponse extends EmseSimpleBehaviour {
@@ -263,7 +261,6 @@ public class AgHotel4 extends HotelManiaAgent {
 
     }
 
-
     // Internal class for searching the agency behavior
     private static class SearchForAgency extends OneShotBehaviour {
 
@@ -292,6 +289,34 @@ public class AgHotel4 extends HotelManiaAgent {
 
     }
 
+    // Internal class for searching the simulator behavior
+    private static class SubscribeToDayEvent extends OneShotBehaviour {
+
+        private final Function<DFAgentDescription[], Object> onFound;
+
+        // Method for searching the agency
+        public SubscribeToDayEvent (Agent a, Function<DFAgentDescription[], Object> f) {
+            super(a);
+            onFound = f;
+        }
+        // overriding the action() method of OneShotBehaviour
+        @Override public void action () {
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithType(SUBSCRIBETODAYEVENT);
+            try {
+                final DFAgentDescription[] search = DFService.search(getAgent(), dfd);
+                if (search.length == 0) {
+                    getAgent().doWait(5000);
+                    getAgent().addBehaviour(new SubscribeToDayEvent(getAgent(), onFound));
+                } else {
+                    onFound.apply(search);
+                }
+            } catch (FIPAException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
+    }
+
 
     private static class HandleSignContractResponse extends EmseSimpleBehaviour {
 
@@ -305,7 +330,6 @@ public class AgHotel4 extends HotelManiaAgent {
             super(agHotel4);
             this.agency = aid;
         }
-
 
         @Override protected List<MessageTemplate> getMessageTemplates () {
             return Arrays.asList(MessageTemplate.MatchSender(agency));

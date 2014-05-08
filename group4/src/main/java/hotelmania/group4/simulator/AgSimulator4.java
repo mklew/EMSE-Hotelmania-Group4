@@ -51,12 +51,10 @@ public class AgSimulator4 extends HotelManiaAgent {
         // Agree Subscription or not?
         addBehaviour(new AchieveREResponder(this, MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE)) {
 
-            // Message to compare
-            ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
-
-            protected ACLMessage prepareResponse(ACLMessage request) throws RefuseException {
+            protected ACLMessage prepareResponse(ACLMessage request) throws NotUnderstoodException, RefuseException {
                 System.out.println(getLocalName()+": SUSCRIBE DayEvent from "+request.getSender().getName()+". Action is "+request.getContent());
-                if (SUBSCRIBETODAYEVENT.equalsIgnoreCase(msg.getContent())) {
+
+                if (true) {
                     // We agree to perform the action. Note that in the FIPA-Request
                     // protocol the AGREE message is optional. Return null if you
                     // don't want to send it.
@@ -65,6 +63,17 @@ public class AgSimulator4 extends HotelManiaAgent {
                     System.out.println(myAgent.getLocalName()+": answer sent -> "+agree.getContent());
 
                     return agree;
+
+                    /*protected ACLMessage prepareResponse(ACLMessage request) throws NotUnderstoodException, RefuseException {
+				System.out.println("Agent "+getLocalName()+": REQUEST received from "+request.getSender().getName()+". Action is "+request.getContent());
+				if (checkAction()) {
+					// We agree to perform the action. Note that in the FIPA-Request
+					// protocol the AGREE message is optional. Return null if you
+					// don't want to send it.
+					System.out.println("Agent "+getLocalName()+": Agree");
+					ACLMessage agree = request.createReply();
+					agree.setPerformative(ACLMessage.AGREE);
+					return agree;*/
                 }
                 else {
                     // We refuse to perform the action
@@ -136,4 +145,15 @@ public class AgSimulator4 extends HotelManiaAgent {
         });
     }
 
+
+    // To check and compare the received code.
+    private boolean checkAction() {
+        // Message to compare (optional for comparing the received msg
+        ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
+        return (msg.getContent() == SUBSCRIBETODAYEVENT);
+    }
+
 }
+
+
+
