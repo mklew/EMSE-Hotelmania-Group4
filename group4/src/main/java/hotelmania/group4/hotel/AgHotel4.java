@@ -68,7 +68,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
         // adding the SubscribeToDayEvent behaviour for interacting with Simulator
         //addBehaviour(SubscribeToDayEvent());
-        addBehaviour(new SubscribeToDayEvent(this, new Function<DFAgentDescription[], Object>() {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SUBSCRIBETODAYEVENT, this, new Function<DFAgentDescription[], Object>() {
             @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
 
                 if (dfAgentDescriptions.length > 1) {
