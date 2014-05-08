@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
  * @since 08/05/14
  */
-public abstract class ProcessDescription<T> implements Function<DFAgentDescription[], Object> {
+public abstract class ProcessDescriptionFn<T> implements Function<DFAgentDescription[], Object> {
 
-    private final static Logger logger = LoggerFactory.getLogger(ProcessDescription.class);
+    private final static Logger logger = LoggerFactory.getLogger(ProcessDescriptionFn.class);
 
     @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
         final Optional<Object> found;

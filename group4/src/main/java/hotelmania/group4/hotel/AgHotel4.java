@@ -4,7 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
-import hotelmania.group4.utils.ProcessDescription;
+import hotelmania.group4.utils.ProcessDescriptionFn;
 import hotelmania.group4.utils.SearchForAgent;
 import hotelmania.ontology.Contract;
 import hotelmania.ontology.Hotel;
@@ -39,7 +39,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
         logger.debug("setting up agent");
 
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.REGISTRATION, this, new ProcessDescription<Object>() {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.REGISTRATION, this, new ProcessDescriptionFn<Object>() {
             @Override public <T> Optional<T> found (
                     DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
                 if (dfAgentDescriptions.length > 1) {
@@ -123,7 +123,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
         // adding the SingContract behaviour for interacting with agency
         //addBehaviour(new SignContract());
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGNCONTRACT, this, new ProcessDescription<Object>() {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGNCONTRACT, this, new ProcessDescriptionFn<Object>() {
             @Override public <T> Optional<T> found (
                     DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
                 if (dfAgentDescriptions.length > 1) {
