@@ -1,9 +1,12 @@
 package hotelmania.group4.utils;
 
 import com.google.common.collect.ImmutableList;
+import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.MessageTemplate;
+import jade.wrapper.AgentController;
+import jade.wrapper.ControllerException;
 
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +42,16 @@ public class Utils {
             final MessageTemplate first = iterator.next();
             final ImmutableList<MessageTemplate> rest = ImmutableList.copyOf(iterator);
             return MessageTemplate.and(first, messageTemplateConjunction(rest));
+        }
+    }
+
+    public static <T> AgentController runAgent (Agent agent, String name, Class<T> agentClass) {
+        try {
+            final AgentController newAgent = agent.getContainerController().getPlatformController().createNewAgent(name, agentClass.getName(), new Object[]{});
+            newAgent.start();
+            return newAgent;
+        } catch (ControllerException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -11,4 +11,6 @@ public interface HotelManiaAgentNames {
     static final String SIGN_CONTRACT = "SignContract";
 
     static final String SUBSCRIBE_TO_DAY_EVENT = "SubscribeToDayEvent";
+
+    static final String AGENCY = "Agency";
 }
