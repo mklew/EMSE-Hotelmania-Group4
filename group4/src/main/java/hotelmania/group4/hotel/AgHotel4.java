@@ -2,41 +2,32 @@ package hotelmania.group4.hotel;
 
 import com.google.common.base.Function;
 import hotelmania.group4.HotelManiaAgent;
-import hotelmania.group4.behaviours.EmseSimpleBehaviour;
-import hotelmania.group4.behaviours.MessageStatus;
-import hotelmania.group4.utils.MessageHandler;
-import hotelmania.group4.utils.MessageMatchingChain;
-import hotelmania.group4.utils.Utils;
-import hotelmania.ontology.*;
+import hotelmania.group4.HotelManiaAgentNames;
+import hotelmania.group4.utils.SearchForAgent;
+import hotelmania.ontology.Contract;
+import hotelmania.ontology.Hotel;
+import hotelmania.ontology.RegistrationRequest;
+import hotelmania.ontology.SignContract;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
 import jade.core.AID;
-import jade.core.Agent;
-import jade.core.behaviours.OneShotBehaviour;
-import jade.core.behaviours.SimpleBehaviour;
-import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREInitiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Date;
-import java.util.Vector;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
-<<<<<<< HEAD
+ *         <<<<<<< HEAD
  * @author Alberth Montero <alberthm@gmail.com>
- *
-=======
+ *         <p/>
+ *         =======
  * @author Tahir <tahircheema30@gmail.com>
->>>>>>> d0f448e65aa2cb1ad024b9454e4621df6d7dc035
+ *         >>>>>>> d0f448e65aa2cb1ad024b9454e4621df6d7dc035
  * @since 20/04/14
  */
 public class AgHotel4 extends HotelManiaAgent {
@@ -45,11 +36,11 @@ public class AgHotel4 extends HotelManiaAgent {
 
     @Override
     protected void setupHotelManiaAgent () {
-        System.out.println(getLocalName()+": HAS ENTERED");
+        System.out.println(getLocalName() + ": HAS ENTERED");
 
         logger.debug("setting up agent");
 
-        addBehaviour(new SearchForHotelMania(this, new Function<DFAgentDescription[], Object>() {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.REGISTRATION, this, new Function<DFAgentDescription[], Object>() {
             @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
 
                 if (dfAgentDescriptions.length > 1) {
@@ -100,28 +91,29 @@ public class AgHotel4 extends HotelManiaAgent {
                     msg.setContent("SubscribeToDayEvent");
                     //SubscribeToDayEvent subscribeToDayEvent = new SubscribeToDayEvent();
                     //SignContract signContract = new SignContract();
-                   //try {
-                        addBehaviour(new AchieveREInitiator(AgHotel4.this, msg) {
-                            protected void handleInform(ACLMessage inform) {
-                                System.out.println("Agent "+inform.getSender().getName()+" successfully performed the requested action");
-                            }
-                            protected void handleRefuse(ACLMessage refuse) {
-                                System.out.println("Agent "+refuse.getSender().getName()+" refused to perform the requested action");
-                            }
-                            protected void handleFailure(ACLMessage failure) {
-                                if (failure.getSender().equals(myAgent.getAMS())) {
-                                    // FAILURE notification from the JADE runtime: the receiver
-                                    // does not exist
-                                    System.out.println("Responder does not exist");
-                                }
-                                else {
-                                    System.out.println("Agent "+failure.getSender().getName()+" failed to perform the requested action");
-                                }
-                            }
-                        } );
+                    //try {
+                    addBehaviour(new AchieveREInitiator(AgHotel4.this, msg) {
+                        protected void handleInform (ACLMessage inform) {
+                            System.out.println("Agent " + inform.getSender().getName() + " successfully performed the requested action");
+                        }
 
-                        // As it is an action and the encoding language the SL, it must be wrapped
-                        // into an Action
+                        protected void handleRefuse (ACLMessage refuse) {
+                            System.out.println("Agent " + refuse.getSender().getName() + " refused to perform the requested action");
+                        }
+
+                        protected void handleFailure (ACLMessage failure) {
+                            if (failure.getSender().equals(myAgent.getAMS())) {
+                                // FAILURE notification from the JADE runtime: the receiver
+                                // does not exist
+                                System.out.println("Responder does not exist");
+                            } else {
+                                System.out.println("Agent " + failure.getSender().getName() + " failed to perform the requested action");
+                            }
+                        }
+                    });
+
+                    // As it is an action and the encoding language the SL, it must be wrapped
+                    // into an Action
                         /*Action agentAction = new Action(simulator, subscribeToDayEvent);
                         getContentManager().fillContent(newMessage, agentAction);
                         addBehaviour(new HandleSignContractResponse(AgHotel4.this, simulator));
@@ -138,7 +130,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
         // adding the SingContract behaviour for interacting with agency
         //addBehaviour(new SignContract());
-        addBehaviour(new SearchForAgency(this, new Function<DFAgentDescription[], Object>() {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGNCONTRACT, this, new Function<DFAgentDescription[], Object>() {
             @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
 
                 if (dfAgentDescriptions.length > 1) {
@@ -186,185 +178,4 @@ public class AgHotel4 extends HotelManiaAgent {
     }
 
 
-    private static class HandleRegistrationRequestResponse extends EmseSimpleBehaviour {
-
-        Logger logger = LoggerFactory.getLogger(getClass());
-
-        private final AID hotelMania;
-
-        private boolean gotResponse = false;
-
-        public HandleRegistrationRequestResponse (AgHotel4 agHotel4, AID aid) {
-            super(agHotel4);
-            this.hotelMania = aid;
-        }
-
-
-        @Override protected List<MessageTemplate> getMessageTemplates () {
-            return Arrays.asList(MessageTemplate.MatchSender(hotelMania));
-        }
-
-        @Override protected MessageStatus processMessage (ACLMessage message) {
-            final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withMessageHandler(new MessageHandler() {
-                @Override public MessageStatus handle (ACLMessage message) {
-                    if (message.getPerformative() == ACLMessage.AGREE) {
-                        logger.info("Received agree as registration response");
-                        return MessageStatus.PROCESSED;
-                    } else if (message.getPerformative() == ACLMessage.REFUSE) {
-                        logger.info("Received refuse as registration response");
-                        return MessageStatus.PROCESSED;
-                    } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
-                        logger.info("Received not understood as registration response");
-                        return MessageStatus.PROCESSED;
-                    } else {
-                        gotResponse = false;
-                        final ACLMessage reply = getHotelManiaAgent().createReply(message);
-                        reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-                        logger.info("Received unexpected message with performative with code {}. Replying with NOT_UNDERSTOOD", message.getPerformative());
-                        sendMessage(reply);
-                        return MessageStatus.PROCESSED;
-                    }
-                }
-            });
-            return messageMatchingChain.handleMessage(message);
-        }
-
-        @Override public boolean done () {
-            return gotResponse;
-        }
-    }
-
-
-    private static class SearchForHotelMania extends OneShotBehaviour {
-
-        private final Function<DFAgentDescription[], Object> onFound;
-
-        public SearchForHotelMania (Agent a, Function<DFAgentDescription[], Object> f) {
-            super(a);
-            onFound = f;
-        }
-
-        @Override public void action () {
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithType(REGISTRATION);
-            try {
-                final DFAgentDescription[] search = DFService.search(getAgent(), dfd);
-                if (search.length == 0) {
-                    getAgent().doWait(5000);
-                    getAgent().addBehaviour(new SearchForHotelMania(getAgent(), onFound));
-                } else {
-                    onFound.apply(search);
-                }
-            } catch (FIPAException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
-
-    }
-
-    // Internal class for searching the agency behavior
-    private static class SearchForAgency extends OneShotBehaviour {
-
-        private final Function<DFAgentDescription[], Object> onFound;
-
-        // Method for searching the agency
-        public SearchForAgency (Agent a, Function<DFAgentDescription[], Object> f) {
-            super(a);
-            onFound = f;
-        }
-        // overriding the action() method of OneShotBehaviour
-        @Override public void action () {
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithType(SIGNCONTRACT);
-            try {
-                final DFAgentDescription[] search = DFService.search(getAgent(), dfd);
-                if (search.length == 0) {
-                    getAgent().doWait(5000);
-                    getAgent().addBehaviour(new SearchForAgency(getAgent(), onFound));
-                } else {
-                    onFound.apply(search);
-                }
-            } catch (FIPAException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
-
-    }
-
-    // Internal class for searching the simulator behavior
-    private static class SubscribeToDayEvent extends OneShotBehaviour {
-
-        private final Function<DFAgentDescription[], Object> onFound;
-
-        // Method for searching the agency
-        public SubscribeToDayEvent (Agent a, Function<DFAgentDescription[], Object> f) {
-            super(a);
-            onFound = f;
-        }
-        // overriding the action() method of OneShotBehaviour
-        @Override public void action () {
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithType(SUBSCRIBETODAYEVENT);
-            try {
-                final DFAgentDescription[] search = DFService.search(getAgent(), dfd);
-                if (search.length == 0) {
-                    getAgent().doWait(5000);
-                    getAgent().addBehaviour(new SubscribeToDayEvent(getAgent(), onFound));
-                } else {
-                    onFound.apply(search);
-                }
-            } catch (FIPAException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
-
-    }
-
-
-    private static class HandleSignContractResponse extends EmseSimpleBehaviour {
-
-        Logger logger = LoggerFactory.getLogger(getClass());
-
-        private final AID agency;
-
-        private boolean gotResponse = false;
-
-        public HandleSignContractResponse (AgHotel4 agHotel4, AID aid) {
-            super(agHotel4);
-            this.agency = aid;
-        }
-
-        @Override protected List<MessageTemplate> getMessageTemplates () {
-            return Arrays.asList(MessageTemplate.MatchSender(agency));
-        }
-
-        @Override protected MessageStatus processMessage (ACLMessage message) {
-            final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withMessageHandler(new MessageHandler() {
-                @Override public MessageStatus handle (ACLMessage message) {
-                    if (message.getPerformative() == ACLMessage.AGREE) {
-                        logger.info("Received agree as SignContract response");
-                        gotResponse = true;
-                        return MessageStatus.PROCESSED;
-                    } else if (message.getPerformative() == ACLMessage.REFUSE) {
-                        logger.info("Received refuse as SignContract response");
-                        gotResponse = true;
-                        return MessageStatus.PROCESSED;
-                    } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
-                        logger.info("Received not understood as SignContract response");
-                        gotResponse = true;
-                        return MessageStatus.PROCESSED;
-                    } else {
-                        gotResponse = false;
-                        final ACLMessage reply = getHotelManiaAgent().createReply(message);
-                        reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-                        logger.info("Received unexpected message with performative with code {}. Replying with NOT_UNDERSTOOD", message.getPerformative());
-                        sendMessage(reply);
-                        return MessageStatus.PROCESSED;
-                    }
-                }
-            });
-            return messageMatchingChain.handleMessage(message);
-        }
-
-        @Override public boolean done () {
-            return gotResponse;
-        }
-    }
 }
