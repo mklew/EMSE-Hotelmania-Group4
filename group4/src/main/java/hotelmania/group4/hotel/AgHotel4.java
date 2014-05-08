@@ -1,8 +1,10 @@
 package hotelmania.group4.hotel;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
+import hotelmania.group4.utils.ProcessDescription;
 import hotelmania.group4.utils.SearchForAgent;
 import hotelmania.ontology.Contract;
 import hotelmania.ontology.Hotel;
@@ -37,9 +39,9 @@ public class AgHotel4 extends HotelManiaAgent {
 
         logger.debug("setting up agent");
 
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.REGISTRATION, this, new Function<DFAgentDescription[], Object>() {
-            @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
-
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.REGISTRATION, this, new ProcessDescription<Object>() {
+            @Override public <T> Optional<T> found (
+                    DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
                 if (dfAgentDescriptions.length > 1) {
                     logger.error("More than 1 hotel mania agents found");
                 } else {
@@ -49,24 +51,18 @@ public class AgHotel4 extends HotelManiaAgent {
                     ACLMessage msg = createMessage(hotelmania, ACLMessage.REQUEST);
                     msg.setProtocol(REGISTRATION);
                     RegistrationRequest registrationRequest = new RegistrationRequest();
-                    try {
-                        final Hotel hotel = new Hotel();
-                        hotel.setHotel_name(HOTEL_NAME);
-                        registrationRequest.setHotel(hotel);
+                    final Hotel hotel = new Hotel();
+                    hotel.setHotel_name(HOTEL_NAME);
+                    registrationRequest.setHotel(hotel);
 
-                        // As it is an action and the encoding language the SL, it must be wrapped
-                        // into an Action
-                        Action agAction = new Action(hotelmania, registrationRequest);
-                        getContentManager().fillContent(msg, agAction);
-                        addBehaviour(new HandleRegistrationRequestResponse(AgHotel4.this, hotelmania));
-                        sendMessage(msg);
-                    } catch (Codec.CodecException e) {
-                        e.printStackTrace();
-                    } catch (OntologyException e) {
-                        e.printStackTrace();
-                    }
+                    // As it is an action and the encoding language the SL, it must be wrapped
+                    // into an Action
+                    Action agAction = new Action(hotelmania, registrationRequest);
+                    getContentManager().fillContent(msg, agAction);
+                    addBehaviour(new HandleRegistrationRequestResponse(AgHotel4.this, hotelmania));
+                    sendMessage(msg);
                 }
-                return null;
+                return Optional.absent();
             }
         }));
 
@@ -127,9 +123,9 @@ public class AgHotel4 extends HotelManiaAgent {
 
         // adding the SingContract behaviour for interacting with agency
         //addBehaviour(new SignContract());
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGNCONTRACT, this, new Function<DFAgentDescription[], Object>() {
-            @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
-
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGNCONTRACT, this, new ProcessDescription<Object>() {
+            @Override public <T> Optional<T> found (
+                    DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
                 if (dfAgentDescriptions.length > 1) {
                     logger.error("More than 1 agencies found");
                 } else {
@@ -139,37 +135,31 @@ public class AgHotel4 extends HotelManiaAgent {
                     ACLMessage newMessage = createMessage(agency, ACLMessage.REQUEST);
                     newMessage.setProtocol(SIGNCONTRACT);
                     SignContract signContract = new SignContract();
-                    try {
-                        // making the contract and setting random values for the attributes
-                        final Contract contract = new Contract();
-                        contract.setChef_1stars(2);
-                        contract.setChef_2stars(2);
-                        contract.setChef_3stars(3);
-                        contract.setRecepcionist_experienced(1);
-                        contract.setRecepcionist_novice(2);
-                        contract.setRoom_service_staff(6);
+                    // making the contract and setting random values for the attributes
+                    final Contract contract = new Contract();
+                    contract.setChef_1stars(2);
+                    contract.setChef_2stars(2);
+                    contract.setChef_3stars(3);
+                    contract.setRecepcionist_experienced(1);
+                    contract.setRecepcionist_novice(2);
+                    contract.setRoom_service_staff(6);
 
-                        // making a new hotel and setting its name as "Hotel4"
-                        final Hotel hotel = new Hotel();
-                        hotel.setHotel_name("Hotel4");
+                    // making a new hotel and setting its name as "Hotel4"
+                    final Hotel hotel = new Hotel();
+                    hotel.setHotel_name("Hotel4");
 
-                        // setting the contract and hotel for 'SignContract'
-                        signContract.setHotel(hotel);
-                        signContract.setContract(contract);
+                    // setting the contract and hotel for 'SignContract'
+                    signContract.setHotel(hotel);
+                    signContract.setContract(contract);
 
-                        // As it is an action and the encoding language the SL, it must be wrapped
-                        // into an Action
-                        Action agentAction = new Action(agency, signContract);
-                        getContentManager().fillContent(newMessage, agentAction);
-                        addBehaviour(new HandleSignContractResponse(AgHotel4.this, agency));
-                        sendMessage(newMessage);
-                    } catch (Codec.CodecException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    } catch (OntologyException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
+                    // As it is an action and the encoding language the SL, it must be wrapped
+                    // into an Action
+                    Action agentAction = new Action(agency, signContract);
+                    getContentManager().fillContent(newMessage, agentAction);
+                    addBehaviour(new HandleSignContractResponse(AgHotel4.this, agency));
+                    sendMessage(newMessage);
                 }
-                return null;
+                return Optional.absent();
             }
         }));
     }
