@@ -28,6 +28,7 @@ import java.util.Date;
  */
 public class AgHotel4 extends HotelManiaAgent {
 
+    public static final String HOTEL_NAME = "Hotel4";
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -50,7 +51,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     RegistrationRequest registrationRequest = new RegistrationRequest();
                     try {
                         final Hotel hotel = new Hotel();
-                        hotel.setHotel_name("Hotel4"); // TODO extract that
+                        hotel.setHotel_name(HOTEL_NAME);
                         registrationRequest.setHotel(hotel);
 
                         // As it is an action and the encoding language the SL, it must be wrapped
