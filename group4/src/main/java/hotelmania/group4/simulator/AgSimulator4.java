@@ -6,15 +6,14 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.NotUnderstoodException;
+import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREResponder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jade.domain.FIPAAgentManagement.NotUnderstoodException;
-import jade.domain.FIPAAgentManagement.RefuseException;
-import jade.domain.FIPAAgentManagement.FailureException;
 
 /**
  * @author Alberth Montero <alberthm@gmail.com>
@@ -27,21 +26,21 @@ public class AgSimulator4 extends HotelManiaAgent {
     @Override
     protected void setupHotelManiaAgent () {
         // Added for testing 2nd iteration Tests
-        System.out.println(getLocalName()+": HAS ENTERED");
+        System.out.println(getLocalName() + ": HAS ENTERED");
 
         logger.debug("setting up agent");
         try {
             // Creates its own description
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), SUBSCRIBETODAYEVENT);
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), SUBSCRIBE_TO_DAY_EVENT);
             // Registers its description in the DF
             DFService.register(this, dfd);
             logger.info(getLocalName() + ": registered in the DF");
 
             // Added for testing 2nd iteration Tests
-            System.out.println(getLocalName()+": registered in the DF");
+            System.out.println(getLocalName() + ": registered in the DF");
             //doWait(10000); // TEST!
             // Wait 10 seconds for subscriptions
-            System.out.println(getLocalName()+": Waiting subscriptions ...");
+            System.out.println(getLocalName() + ": Waiting subscriptions ...");
 
         } catch (FIPAException e) {
             e.printStackTrace();
@@ -51,8 +50,8 @@ public class AgSimulator4 extends HotelManiaAgent {
         // Agree Subscription or not?
         addBehaviour(new AchieveREResponder(this, MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE)) {
 
-            protected ACLMessage prepareResponse(ACLMessage request) throws NotUnderstoodException, RefuseException {
-                System.out.println(getLocalName()+": SUSCRIBE DayEvent from "+request.getSender().getName()+". Action is "+request.getContent());
+            protected ACLMessage prepareResponse (ACLMessage request) throws NotUnderstoodException, RefuseException {
+                System.out.println(getLocalName() + ": SUSCRIBE DayEvent from " + request.getSender().getName() + ". Action is " + request.getContent());
 
                 if (true) {
                     // We agree to perform the action. Note that in the FIPA-Request
@@ -60,12 +59,12 @@ public class AgSimulator4 extends HotelManiaAgent {
                     // don't want to send it.
                     ACLMessage agree = request.createReply();
                     agree.setPerformative(ACLMessage.AGREE);
-                    System.out.println(myAgent.getLocalName()+": answer sent -> "+agree.getContent());
+                    System.out.println(myAgent.getLocalName() + ": answer sent -> " + agree.getContent());
 
                     return agree;
 
                     /*protected ACLMessage prepareResponse(ACLMessage request) throws NotUnderstoodException, RefuseException {
-				System.out.println("Agent "+getLocalName()+": REQUEST received from "+request.getSender().getName()+". Action is "+request.getContent());
+                System.out.println("Agent "+getLocalName()+": REQUEST received from "+request.getSender().getName()+". Action is "+request.getContent());
 				if (checkAction()) {
 					// We agree to perform the action. Note that in the FIPA-Request
 					// protocol the AGREE message is optional. Return null if you
@@ -74,11 +73,10 @@ public class AgSimulator4 extends HotelManiaAgent {
 					ACLMessage agree = request.createReply();
 					agree.setPerformative(ACLMessage.AGREE);
 					return agree;*/
-                }
-                else {
+                } else {
                     // We refuse to perform the action
-                    System.out.println("Agent "+getLocalName()+": Refuse");
-                    System.out.println(myAgent.getLocalName()+": answer sent ->REFUSE");
+                    System.out.println("Agent " + getLocalName() + ": Refuse");
+                    System.out.println(myAgent.getLocalName() + ": answer sent ->REFUSE");
                     throw new RefuseException("check-failed in AchieveREResponder");
                 }
             }
@@ -95,41 +93,31 @@ public class AgSimulator4 extends HotelManiaAgent {
                     throw new FailureException("unexpected-error");
                 }
             }*/
-        } );
+        });
 
         // Cancel Subscription or not?
-        addBehaviour(new CyclicBehaviour(this)
-        {
-            public void action()
-            {
+        addBehaviour(new CyclicBehaviour(this) {
+            public void action () {
                 // Waits for estimation cancel request
                 ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.CANCEL));
-                if (msg != null)
-                {
+                if (msg != null) {
                     // If a cancel arrives..
-                    System.out.println(myAgent.getLocalName()+": CANCEL DayEvent from "+(msg.getSender()).getLocalName());
-                }
-                else
-                {
+                    System.out.println(myAgent.getLocalName() + ": CANCEL DayEvent from " + (msg.getSender()).getLocalName());
+                } else {
                     // If no message arrives
                     block();
                 }
             }
         });
 
-        addBehaviour(new CyclicBehaviour(this)
-        {
-            public void action()
-            {
+        addBehaviour(new CyclicBehaviour(this) {
+            public void action () {
                 // Waits for request not understood
                 ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.NOT_UNDERSTOOD));
-                if (msg != null)
-                {
+                if (msg != null) {
                     // If a not understood message arrives...
-                    System.out.println(myAgent.getLocalName()+": answer sent ->NOT_UNDERSTOOD");
-                }
-                else
-                {
+                    System.out.println(myAgent.getLocalName() + ": answer sent ->NOT_UNDERSTOOD");
+                } else {
                     // If no message arrives
                     block();
                 }
@@ -138,7 +126,7 @@ public class AgSimulator4 extends HotelManiaAgent {
 
         // for sending the day change - ? Implement
         addBehaviour(new TickerBehaviour(this, 10000) {
-            protected void onTick() {
+            protected void onTick () {
                 // perform operation Y
 
             }
@@ -147,10 +135,10 @@ public class AgSimulator4 extends HotelManiaAgent {
 
 
     // To check and compare the received code.
-    private boolean checkAction() {
+    private boolean checkAction () {
         // Message to compare (optional for comparing the received msg
         ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
-        return (msg.getContent() == SUBSCRIBETODAYEVENT);
+        return (msg.getContent() == SUBSCRIBE_TO_DAY_EVENT);
     }
 
 }

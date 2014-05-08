@@ -68,7 +68,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
         // adding the SubscribeToDayEvent behaviour for interacting with Simulator
         //addBehaviour(SubscribeToDayEvent());
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SUBSCRIBETODAYEVENT, this, new Function<DFAgentDescription[], Object>() {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SUBSCRIBE_TO_DAY_EVENT, this, new Function<DFAgentDescription[], Object>() {
             @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
 
                 if (dfAgentDescriptions.length > 1) {
@@ -78,7 +78,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     final AID simulator = dfAgentDescription.getName();
 
                     ACLMessage msg = createMessage(simulator, ACLMessage.SUBSCRIBE);
-                    msg.setProtocol(SUBSCRIBETODAYEVENT);
+                    msg.setProtocol(SUBSCRIBE_TO_DAY_EVENT);
                     // We want to receive a reply in 10 secs
                     msg.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
                     msg.setContent("SubscribeToDayEvent");
@@ -123,7 +123,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
         // adding the SingContract behaviour for interacting with agency
         //addBehaviour(new SignContract());
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGNCONTRACT, this, new ProcessDescriptionFn<Object>() {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGN_CONTRACT, this, new ProcessDescriptionFn<Object>() {
             @Override public <T> Optional<T> found (
                     DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
                 if (dfAgentDescriptions.length > 1) {
@@ -133,7 +133,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     final AID agency = dfAgentDescription.getName();
 
                     ACLMessage newMessage = createMessage(agency, ACLMessage.REQUEST);
-                    newMessage.setProtocol(SIGNCONTRACT);
+                    newMessage.setProtocol(SIGN_CONTRACT);
                     SignContract signContract = new SignContract();
                     // making the contract and setting random values for the attributes
                     final Contract contract = new Contract();
