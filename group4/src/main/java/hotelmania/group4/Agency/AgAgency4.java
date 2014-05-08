@@ -16,14 +16,14 @@ public class AgAgency4 extends HotelManiaAgent {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    protected void setupHotelManiaAgent() {
-        System.out.println(getLocalName()+": HAS ENTERED");
+    protected void setupHotelManiaAgent () {
+        System.out.println(getLocalName() + ": HAS ENTERED");
 
         logger.debug("setting up agent");
 
         try {
             // Creates its own description
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), SIGNCONTRACT);
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), SIGN_CONTRACT);
             // Registers its description in the DF
             DFService.register(this, dfd);
             logger.info(getLocalName() + ": registered in the DF");
@@ -31,7 +31,7 @@ public class AgAgency4 extends HotelManiaAgent {
             e.printStackTrace();
         }
 
-     addBehaviour(new SignContractBehaviour(this));
+        addBehaviour(new SignContractBehaviour(this));
 
     }
 }

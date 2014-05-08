@@ -82,9 +82,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     // We want to receive a reply in 10 secs
                     msg.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
                     msg.setContent("SubscribeToDayEvent");
-                    //SubscribeToDayEvent subscribeToDayEvent = new SubscribeToDayEvent();
-                    //SignContract signContract = new SignContract();
-                    //try {
+
                     addBehaviour(new AchieveREInitiator(AgHotel4.this, msg) {
                         protected void handleInform (ACLMessage inform) {
                             System.out.println("Agent " + inform.getSender().getName() + " successfully performed the requested action");
@@ -105,17 +103,6 @@ public class AgHotel4 extends HotelManiaAgent {
                         }
                     });
 
-                    // As it is an action and the encoding language the SL, it must be wrapped
-                    // into an Action
-                        /*Action agentAction = new Action(simulator, subscribeToDayEvent);
-                        getContentManager().fillContent(newMessage, agentAction);
-                        addBehaviour(new HandleSignContractResponse(AgHotel4.this, simulator));
-                        sendMessage(newMessage);
-                    } catch ( e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    } catch (OntologyException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }*/
                 }
                 return null;
             }
