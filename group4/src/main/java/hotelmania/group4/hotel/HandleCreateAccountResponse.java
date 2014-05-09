@@ -36,15 +36,15 @@ class HandleCreateAccountResponse extends EmseSimpleBehaviour {
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withMessageHandler(new MessageHandler() {
             @Override public MessageStatus handle (ACLMessage message) {
                 if (message.getPerformative() == ACLMessage.AGREE) {
-                    logger.info("Received agree as SignContract response");
+                    logger.info("Received agree as CreateAccount response");
                     gotResponse = true;
                     return MessageStatus.PROCESSED;
                 } else if (message.getPerformative() == ACLMessage.REFUSE) {
-                    logger.info("Received refuse as SignContract response");
+                    logger.info("Received refuse as CreateAccount response");
                     gotResponse = true;
                     return MessageStatus.PROCESSED;
                 } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
-                    logger.info("Received not understood as SignContract response");
+                    logger.info("Received not understood as CreateAccount response");
                     gotResponse = true;
                     return MessageStatus.PROCESSED;
                 } else {

@@ -61,7 +61,7 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
             public MessageStatus handle(ACLMessage message) {
                 reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
                 getAgent().send(reply);
-                logger.info("Sent NOT_UNDERSTOOD as a SignContract response");
+                logger.info("Sent NOT_UNDERSTOOD as a CreateAccount response");
                 return MessageStatus.PROCESSED;
             }
         });
