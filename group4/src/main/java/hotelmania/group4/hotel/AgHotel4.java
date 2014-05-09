@@ -8,6 +8,8 @@ import hotelmania.group4.utils.ProcessDescriptionFn;
 import hotelmania.group4.utils.SearchForAgent;
 import hotelmania.ontology.Contract;
 import hotelmania.ontology.Hotel;
+import hotelmania.ontology.CreateAccountRequest;
+import hotelmania.ontology.*;
 import hotelmania.ontology.RegistrationRequest;
 import hotelmania.ontology.SignContract;
 import jade.content.lang.Codec;
@@ -163,9 +165,12 @@ public class AgHotel4 extends HotelManiaAgent {
 
                     ACLMessage newMessage = createMessage(bank, ACLMessage.REQUEST);
                     newMessage.setProtocol(CREATE_ACCOUNT);
+
                     CreateAccountRequest accountRequest = new CreateAccountRequest();
-                    // making the contract and setting random values for the attributes
-                    final Contract contract = new Contract();
+                    // making the account request and setting random the name of the hotel
+                    Hotel hotel = new Hotel();
+                    hotel.setHotel_name("Hotel4");
+                    accountRequest.setHotel(hotel);
 
 
                     // As it is an action and the encoding language the SL, it must be wrapped

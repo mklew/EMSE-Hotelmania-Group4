@@ -8,7 +8,7 @@ import hotelmania.group4.guice.GuiceConfigurer;
 import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
-import hotelmania.ontology.SignContract;
+import hotelmania.ontology.CreateAccountRequest;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;
@@ -45,13 +45,13 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
     @Override protected MessageStatus processMessage (final ACLMessage message) {
         final ACLMessage reply = bank.createReply(message);
 
-        final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(SignContract.class, new ActionMessageHandler<SignContract>() {
-            @Override public MessageStatus handle (SignContract action, ACLMessage message) {
+        final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(CreateAccountRequest.class, new ActionMessageHandler<CreateAccountRequest>() {
+            @Override public MessageStatus handle (CreateAccountRequest action, ACLMessage message) {
 
-                if(action.getContract().getRecepcionist_experienced() < 3) {
+                if(action.getHotel().getHotel_name().equals("Hotel4")) {
                     reply.setPerformative(ACLMessage.AGREE);
                     getAgent().send(reply);
-                    logger.info("Sent AGREE as a SignContract response");
+                    logger.info("Sent AGREE as a CreateAccount response");
                 }
 
                 return MessageStatus.PROCESSED;
