@@ -12,5 +12,7 @@ public interface HotelManiaAgentNames {
 
     static final String SUBSCRIBE_TO_DAY_EVENT = "SubscribeToDayEvent";
 
+    static final String CREATE_ACCOUNT = "CreateAccount";
+
     static final String AGENCY = "Agency";
 }

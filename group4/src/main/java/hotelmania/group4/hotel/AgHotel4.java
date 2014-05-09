@@ -149,6 +149,37 @@ public class AgHotel4 extends HotelManiaAgent {
                 return Optional.absent();
             }
         }));
+
+
+        // adding a behaviour for searching the bank
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.CREATE_ACCOUNT, this, new ProcessDescriptionFn<Object>() {
+            @Override public <T> Optional<T> found (
+                    DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
+                if (dfAgentDescriptions.length > 1) {
+                    logger.error("More than 1 banks found");
+                } else {
+                    final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
+                    final AID bank = dfAgentDescription.getName();
+
+                    ACLMessage newMessage = createMessage(bank, ACLMessage.REQUEST);
+                    newMessage.setProtocol(CREATE_ACCOUNT);
+                    CreateAccountRequest accountRequest = new CreateAccountRequest();
+                    // making the contract and setting random values for the attributes
+                    final Contract contract = new Contract();
+
+
+                    // As it is an action and the encoding language the SL, it must be wrapped
+                    // into an Action
+                    Action agentAction = new Action(bank, accountRequest);
+                    getContentManager().fillContent(newMessage, agentAction);
+                    addBehaviour(new HandleCreateAccountResponse(AgHotel4.this, bank));
+                    sendMessage(newMessage);
+                }
+                return Optional.absent();
+            }
+        }));
+
+
     }
 
 
