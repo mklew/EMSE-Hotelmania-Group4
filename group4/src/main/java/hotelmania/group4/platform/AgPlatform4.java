@@ -6,6 +6,7 @@ import hotelmania.group4.RegistrationBehaviour;
 import hotelmania.group4.agency.AgAgency4;
 import hotelmania.group4.bank.AgBank4;
 import hotelmania.group4.simulator.AgSimulator4;
+import hotelmania.group4.utils.EchoMessages;
 import hotelmania.group4.utils.Utils;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -43,5 +44,8 @@ public class AgPlatform4 extends HotelManiaAgent {
         Utils.runAgent(this, HotelManiaAgentNames.AGENCY, AgAgency4.class);
 
         Utils.runAgent(this, HotelManiaAgentNames.CREATE_ACCOUNT, AgBank4.class);
+
+        addBehaviour(new ProbeNumberOfClients(this));
+        addBehaviour(new EchoMessages(this));
     }
 }

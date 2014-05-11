@@ -40,7 +40,7 @@ public abstract class HotelManiaAgent extends Agent implements HotelManiaAgentNa
         return ontology;
     }
 
-    protected ACLMessage createMessage (AID receiver, int performative) {
+    public ACLMessage createMessage (AID receiver, int performative) {
         ACLMessage msg = new ACLMessage(performative);
         msg.addReceiver(receiver);
         msg.setLanguage(codec.getName());

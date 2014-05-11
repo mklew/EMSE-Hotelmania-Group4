@@ -6,6 +6,8 @@ import jade.content.ContentElement;
 import jade.content.onto.basic.Action;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Template to handle message
@@ -20,6 +22,8 @@ public class ActionMatcher<T> implements MessageProcessor<T> {
     private final Agent agent;
 
     private final ActionMessageHandler<T> handler;
+
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     public ActionMatcher (Class<T> actionClass, Agent agent, ActionMessageHandler<T> handler) {
         this.actionClass = actionClass;
@@ -37,12 +41,14 @@ public class ActionMatcher<T> implements MessageProcessor<T> {
                 try {
                     return handler.handle(action, message);
                 } catch (Exception e) {
+                    logger.debug("Error while handling message", e);
                     return MessageStatus.NOT_PROCESSED;
                 }
             } else {
                 return MessageStatus.NOT_PROCESSED;
             }
         } catch (Exception e) {
+            logger.debug("Error", e);
             return MessageStatus.NOT_PROCESSED;
         }
     }

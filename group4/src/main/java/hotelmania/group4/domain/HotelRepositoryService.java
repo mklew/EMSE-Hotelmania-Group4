@@ -1,7 +1,7 @@
 package hotelmania.group4.domain;
 
 
-import hotelmania.ontology.Hotel;
+import java.util.Set;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
@@ -9,5 +9,7 @@ import hotelmania.ontology.Hotel;
  */
 public interface HotelRepositoryService {
 
-    void registerHotel (Hotel hotel) throws HotelAlreadyRegisteredException;
+    void registerHotel (HotelWithAgent hotel) throws HotelAlreadyRegisteredException;
+
+    Set<HotelWithAgent> getHotels();
 }

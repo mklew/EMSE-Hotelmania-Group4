@@ -1,5 +1,6 @@
 package hotelmania.group4.hotel;
 
+import hotelmania.group4.HotelManiaAgentNames;
 import hotelmania.group4.behaviours.EmseSimpleBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.utils.MessageHandler;
@@ -32,7 +33,9 @@ class HandleRegistrationRequestResponse extends EmseSimpleBehaviour {
 
 
     @Override protected List<MessageTemplate> getMessageTemplates () {
-        return Arrays.asList(MessageTemplate.MatchSender(hotelMania));
+        final MessageTemplate messageTemplate = MessageTemplate.MatchSender(hotelMania);
+        final MessageTemplate withProtocolName = MessageTemplate.MatchProtocol(HotelManiaAgentNames.REGISTRATION);
+        return Arrays.asList(messageTemplate, withProtocolName);
     }
 
     @Override protected MessageStatus processMessage (ACLMessage message) {
