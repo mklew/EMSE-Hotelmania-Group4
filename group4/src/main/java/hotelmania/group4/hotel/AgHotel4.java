@@ -6,19 +6,15 @@ import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
 import hotelmania.group4.utils.ProcessDescriptionFn;
 import hotelmania.group4.utils.SearchForAgent;
-import hotelmania.ontology.Contract;
-import hotelmania.ontology.Hotel;
-import hotelmania.ontology.CreateAccountRequest;
 import hotelmania.ontology.*;
-import hotelmania.ontology.RegistrationRequest;
-import hotelmania.ontology.SignContract;
+import jade.content.ContentElement;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
-import jade.proto.AchieveREInitiator;
+import jade.proto.SubscriptionInitiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +30,8 @@ public class AgHotel4 extends HotelManiaAgent {
 
     public static final String HOTEL_NAME = "Hotel4";
     Logger logger = LoggerFactory.getLogger(getClass());
+
+    private SubscriptionInitiator dayEventsNotificationSubscriptionInitiator;
 
     @Override
     protected void setupHotelManiaAgent () {
@@ -85,26 +83,22 @@ public class AgHotel4 extends HotelManiaAgent {
                     msg.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
                     msg.setContent("SubscribeToDayEvent");
 
-                    addBehaviour(new AchieveREInitiator(AgHotel4.this, msg) {
-                        protected void handleInform (ACLMessage inform) {
-                            System.out.println("Agent " + inform.getSender().getName() + " successfully performed the requested action");
-                        }
-
-                        protected void handleRefuse (ACLMessage refuse) {
-                            System.out.println("Agent " + refuse.getSender().getName() + " refused to perform the requested action");
-                        }
-
-                        protected void handleFailure (ACLMessage failure) {
-                            if (failure.getSender().equals(myAgent.getAMS())) {
-                                // FAILURE notification from the JADE runtime: the receiver
-                                // does not exist
-                                System.out.println("Responder does not exist");
-                            } else {
-                                System.out.println("Agent " + failure.getSender().getName() + " failed to perform the requested action");
+                    dayEventsNotificationSubscriptionInitiator = new SubscriptionInitiator(AgHotel4.this, msg) {
+                        @Override protected void handleInform (ACLMessage inform) {
+                            super.handleInform(inform);    //To change body of overridden methods use File | Settings | File Templates.
+                            ContentElement content = null;
+                            try {
+                                content = getAgent().getContentManager().extractContent(inform);
+                            } catch (Codec.CodecException e) {
+                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            } catch (OntologyException e) {
+                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                             }
+                            NotificationDayEvent notificationDayEvent = (NotificationDayEvent) content;
+                            logger.info("Received new day event notification. Day {}", notificationDayEvent.getDayEvent().getDay());
                         }
-                    });
-
+                    };
+                    addBehaviour(dayEventsNotificationSubscriptionInitiator);
                 }
                 return null;
             }
