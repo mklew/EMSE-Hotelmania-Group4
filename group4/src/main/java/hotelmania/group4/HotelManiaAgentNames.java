@@ -15,4 +15,6 @@ public interface HotelManiaAgentNames {
     static final String CREATE_ACCOUNT = "CreateAccount";
 
     static final String AGENCY = "Agency";
+
+    static final String NUMBER_OF_CLIENTS = "NumberOfClients";
 }

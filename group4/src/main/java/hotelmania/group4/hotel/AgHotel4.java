@@ -178,6 +178,8 @@ public class AgHotel4 extends HotelManiaAgent {
             }
         }));
 
+        addBehaviour(new RespondToNumberOfClients(this));
+
 
     }
 
