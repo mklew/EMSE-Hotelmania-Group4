@@ -53,11 +53,11 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
                 final Hotel hotel = action.getHotel();
                 try {
                     bankAccountRepository.createAccount(hotel);
-                    reply.setPerformative(ACLMessage.AGREE);
+                    reply.setPerformative(ACLMessage.INFORM);
                     getAgent().send(reply);
                     logger.info("Sent AGREE as a CreateAccount response");
                 } catch (AccountAlreadyExistsException e) {
-                    reply.setPerformative(ACLMessage.REFUSE);
+                    reply.setPerformative(ACLMessage.FAILURE);
                     getAgent().send(reply);
                     logger.info("Sent REFUSE as a CreateAccount response");
                 }
