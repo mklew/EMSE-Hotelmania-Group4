@@ -1,10 +1,10 @@
 package hotelmania.group4.platform;
 
-import hotelmania.group4.Bank.AgBank4;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
 import hotelmania.group4.RegistrationBehaviour;
 import hotelmania.group4.agency.AgAgency4;
+import hotelmania.group4.bank.AgBank4;
 import hotelmania.group4.simulator.AgSimulator4;
 import hotelmania.group4.utils.Utils;
 import jade.domain.DFService;

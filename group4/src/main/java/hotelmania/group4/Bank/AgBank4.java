@@ -1,4 +1,4 @@
-package hotelmania.group4.Bank;
+package hotelmania.group4.bank;
 
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.utils.Utils;

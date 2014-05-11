@@ -1,12 +1,10 @@
-package hotelmania.group4.Bank;
+package hotelmania.group4.bank;
 
 import com.google.inject.Inject;
 import hotelmania.group4.behaviours.EmseCyclicBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.domain.AccountAlreadyExistsException;
 import hotelmania.group4.domain.BankAccountRepository;
-import hotelmania.group4.domain.HotelAlreadyRegisteredException;
-import hotelmania.group4.domain.HotelRepositoryService;
 import hotelmania.group4.guice.GuiceConfigurer;
 import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageHandler;
@@ -68,7 +66,7 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
             }
         }).withDefaultHandler(new MessageHandler() {
             @Override
-            public MessageStatus handle(ACLMessage message) {
+            public MessageStatus handle (ACLMessage message) {
                 reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
                 getAgent().send(reply);
                 logger.info("Sent NOT_UNDERSTOOD as a CreateAccount response");
