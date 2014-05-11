@@ -33,7 +33,13 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
     @Override
     public void action () {
         final List<MessageTemplate> messageTemplates = getMessageTemplates();
-        final ACLMessage receive = getAgent().receive(Utils.messageTemplateConjunction(messageTemplates));
+        ACLMessage receive;
+        if(messageTemplates.isEmpty()) {
+            receive = getAgent().receive();
+        }
+        else {
+            receive = getAgent().receive(Utils.messageTemplateConjunction(messageTemplates));
+        }
         final Optional<ACLMessage> aclMessageOptional = Optional.fromNullable(receive);
         if (aclMessageOptional.isPresent()) {
             logger.debug("Received message {}", receive.toString());
