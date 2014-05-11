@@ -17,7 +17,7 @@ public class SearchForAgent extends OneShotBehaviour {
 
     private final Logger logger = LoggerFactory.getLogger(SearchForAgent.class);
 
-    public static final int TIMEOUT = 5000;
+    public static final int TIMEOUT = 200;
 
     private final Function<DFAgentDescription[], Object> onFound;
 
