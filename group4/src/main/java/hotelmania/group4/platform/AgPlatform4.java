@@ -1,5 +1,6 @@
 package hotelmania.group4.platform;
 
+import hotelmania.group4.Bank.AgBank4;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
 import hotelmania.group4.RegistrationBehaviour;
@@ -40,5 +41,7 @@ public class AgPlatform4 extends HotelManiaAgent {
         Utils.runAgent(this, HotelManiaAgentNames.SUBSCRIBE_TO_DAY_EVENT, AgSimulator4.class);
 
         Utils.runAgent(this, HotelManiaAgentNames.AGENCY, AgAgency4.class);
+
+        Utils.runAgent(this, HotelManiaAgentNames.CREATE_ACCOUNT, AgBank4.class);
     }
 }
