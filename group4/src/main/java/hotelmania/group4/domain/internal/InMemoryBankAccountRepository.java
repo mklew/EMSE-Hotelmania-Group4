@@ -19,7 +19,7 @@ public class InMemoryBankAccountRepository implements BankAccountRepository {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Hashtable accounts = new Hashtable();
     @Override
-    public synchronized int createAccount(final Hotel hotel) throws AccountAlreadyExistsException {
+    public synchronized Account createAccount(final Hotel hotel) throws AccountAlreadyExistsException {
         if (accounts.containsKey(hotel.getHotel_name()))
         {
             logger.debug("Account with title {} has already been Created", hotel.getHotel_name());
@@ -36,7 +36,7 @@ public class InMemoryBankAccountRepository implements BankAccountRepository {
                 newAccount.setId_account(1001);
                 accounts.put(1001, newAccount);
                 logger.info("Created Account with ID 1001 in Bank4");
-                return 1001;
+                return newAccount;
             }
             else
             {
@@ -49,7 +49,7 @@ public class InMemoryBankAccountRepository implements BankAccountRepository {
 
                 accounts.put(key, newAccount);
                 logger.info("Created Account with ID {} in Bank4", key);
-                return key;
+                return newAccount;
             }
         }
     }

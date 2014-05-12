@@ -9,8 +9,14 @@ import hotelmania.group4.guice.GuiceConfigurer;
 import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
+import hotelmania.ontology.Account;
+import hotelmania.ontology.AccountStatus;
 import hotelmania.ontology.CreateAccountRequest;
 import hotelmania.ontology.Hotel;
+import jade.content.Predicate;
+import jade.content.lang.Codec;
+import jade.content.onto.OntologyException;
+import jade.content.onto.basic.Action;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;
@@ -52,9 +58,20 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
 
                 final Hotel hotel = action.getHotel();
                 try {
-                    int id = bankAccountRepository.createAccount(hotel);
+
+                    Account newAccount = bankAccountRepository.createAccount(hotel);
                     reply.setPerformative(ACLMessage.INFORM);
-                    reply.setContent((Integer.toString(id)));
+                    AccountStatus accountStatus = new AccountStatus();
+                    accountStatus.setAccount(newAccount);
+
+                    try {
+                        myAgent.getContentManager().fillContent(reply, accountStatus);
+                    } catch (Codec.CodecException e) {
+                        e.printStackTrace();
+                    } catch (OntologyException e) {
+                        e.printStackTrace();
+                    }
+
                     getAgent().send(reply);
                     logger.info("Sent AGREE as a CreateAccount response");
                 } catch (AccountAlreadyExistsException e) {

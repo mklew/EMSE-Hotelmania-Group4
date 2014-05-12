@@ -8,6 +8,6 @@ import hotelmania.ontology.Hotel;
  * Created by Tahir on 09/05/2014.
  */
 public interface BankAccountRepository {
-    int createAccount (Hotel hotel) throws AccountAlreadyExistsException;
+    Account createAccount (Hotel hotel) throws AccountAlreadyExistsException;
     Account retrieveBalance (int account_ID) throws AccountDoesNotExistException;
 }
