@@ -6,13 +6,16 @@ import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
 import hotelmania.group4.utils.ProcessDescriptionFn;
 import hotelmania.group4.utils.SearchForAgent;
+import hotelmania.group4.utils.Utils;
 import hotelmania.ontology.*;
 import jade.content.ContentElement;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
 import jade.core.AID;
+import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.proto.SubscriptionInitiator;
 import org.slf4j.Logger;
@@ -39,6 +42,16 @@ public class AgHotel4 extends HotelManiaAgent {
         System.out.println(getLocalName() + ": HAS ENTERED");
 
         logger.debug("setting up agent");
+
+        try {
+            // Creates its own description
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), QUERY_NUMBER_OF_CLIENTS);
+            // Registers its description in the DF
+            DFService.register(this, dfd);
+            logger.info(getLocalName() + ": registered in the DF");
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
 
         addBehaviour(new SearchForAgent(HotelManiaAgentNames.REGISTRATION, this, new ProcessDescriptionFn<Object>() {
             @Override public <T> Optional<T> found (
