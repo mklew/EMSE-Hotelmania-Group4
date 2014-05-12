@@ -19,23 +19,26 @@ import java.util.List;
 class HandleCreateAccountResponse extends EmseSimpleBehaviour {
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final AID agency;
+    private final AID bank;
 
     private boolean gotResponse = false;
 
     public HandleCreateAccountResponse (AgHotel4 agHotel4, AID aid) {
         super(agHotel4);
-        this.agency = aid;
+        this.bank = aid;
     }
 
     @Override protected List<MessageTemplate> getMessageTemplates () {
-        return Arrays.asList(MessageTemplate.MatchSender(agency));
+        return Arrays.asList(MessageTemplate.MatchSender(bank));
     }
 
     @Override protected MessageStatus processMessage (ACLMessage message) {
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withMessageHandler(new MessageHandler() {
             @Override public MessageStatus handle (ACLMessage message) {
                 if (message.getPerformative() == ACLMessage.INFORM) {
+
+                    // TODO: somehow setting this message.getContent() as the the ACCOUNT_ID of hotel
+
                     logger.info("Received INFORM for successful CreateAccount");
                     gotResponse = true;
                     return MessageStatus.PROCESSED;

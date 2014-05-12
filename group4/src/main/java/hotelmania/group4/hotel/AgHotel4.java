@@ -29,6 +29,7 @@ import java.util.Date;
 public class AgHotel4 extends HotelManiaAgent {
 
     public static final String HOTEL_NAME = "Hotel4";
+    private int ACCOUNT_ID;
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private SubscriptionInitiator dayEventsNotificationSubscriptionInitiator;
@@ -105,7 +106,6 @@ public class AgHotel4 extends HotelManiaAgent {
         }));
 
         // adding the SingContract behaviour for interacting with agency
-        //addBehaviour(new SignContract());
         addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGN_CONTRACT, this, new ProcessDescriptionFn<Object>() {
             @Override public <T> Optional<T> found (
                     DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
@@ -177,6 +177,38 @@ public class AgHotel4 extends HotelManiaAgent {
                 return Optional.absent();
             }
         }));
+
+
+
+        // adding behaviour for checking Account Status
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.ACCOUNT_STATUS, this, new ProcessDescriptionFn<Object>() {
+            @Override public <T> Optional<T> found (
+                    DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
+                if (dfAgentDescriptions.length > 1) {
+                    logger.error("More than 1 Banks found");
+                } else {
+                    final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
+                    final AID bank = dfAgentDescription.getName();
+
+                    ACLMessage newMessage = createMessage(bank, ACLMessage.REQUEST);
+                    newMessage.setProtocol(ACCOUNT_STATUS);
+
+                    // Creating a new AccountStatusQueryRef
+                    AccountStatusQueryRef account = new AccountStatusQueryRef();
+                    account.setId_account(ACCOUNT_ID);
+
+                    // As it is an action and the encoding language the SL, it must be wrapped
+                    // into an Action
+                    Action agentAction = new Action(bank, account);
+                    getContentManager().fillContent(newMessage, agentAction);
+                    addBehaviour(new HandleSignContractResponse(AgHotel4.this, bank));
+                    sendMessage(newMessage);
+                }
+                return Optional.absent();
+            }
+        }));
+
+
 
         addBehaviour(new RespondToNumberOfClients(this));
 

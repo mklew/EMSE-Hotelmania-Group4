@@ -18,7 +18,7 @@ public class InMemoryBankAccountRepository implements BankAccountRepository {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Hashtable accounts = new Hashtable();
     @Override
-    public synchronized void createAccount(final Hotel hotel) throws AccountAlreadyExistsException {
+    public synchronized int createAccount(final Hotel hotel) throws AccountAlreadyExistsException {
         if (accounts.containsKey(hotel.getHotel_name()))
         {
             logger.debug("Account with title {} has already been Created", hotel.getHotel_name());
@@ -26,9 +26,26 @@ public class InMemoryBankAccountRepository implements BankAccountRepository {
         }
         else
         {
-            int balance = 100;
-            accounts.put(hotel.getHotel_name(), balance);
-            logger.info("Created Account with title {} in Bank4", hotel.getHotel_name());
+            if (accounts.isEmpty())
+            {
+                int balance = 100;
+                accounts.put(1001, balance);
+                logger.info("Created Account with ID 1001 in Bank4");
+                return 1001;
+            }
+            else
+            {
+                int balance = 100;
+                int key = 1000 + accounts.size();
+                accounts.put(key, balance);
+                logger.info("Created Account with ID {} in Bank4", key);
+                return key;
+            }
         }
+    }
+
+    public synchronized int retrieveBalance (int account_ID) throws AccountDoesNotExistException
+    {
+        return (int)accounts.get(account_ID);
     }
 }

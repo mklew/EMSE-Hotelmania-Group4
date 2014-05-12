@@ -2,13 +2,17 @@ package hotelmania.group4.bank;
 
 import com.google.inject.Inject;
 import hotelmania.group4.behaviours.EmseCyclicBehaviour;
+import hotelmania.group4.behaviours.EmseSimpleBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.domain.AccountAlreadyExistsException;
 import hotelmania.group4.domain.BankAccountRepository;
+import hotelmania.group4.domain.internal.AccountDoesNotExistException;
 import hotelmania.group4.guice.GuiceConfigurer;
 import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
+import hotelmania.ontology.Account;
+import hotelmania.ontology.AccountStatusQueryRef;
 import hotelmania.ontology.CreateAccountRequest;
 import hotelmania.ontology.Hotel;
 import jade.lang.acl.ACLMessage;
@@ -20,9 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by Tahir on 09/05/2014.
+ * Created by azfar on 12/05/2014.
  */
-public class CreateAccountBehaviour extends EmseCyclicBehaviour {
+public class InformAccountStatusBehaviour extends EmseCyclicBehaviour {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private final AgBank4 bank;
@@ -30,7 +34,7 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
     @Inject
     private BankAccountRepository bankAccountRepository;
 
-    public CreateAccountBehaviour (AgBank4 a) {
+    public InformAccountStatusBehaviour (AgBank4 a) {
         super(a);
         bank = a;
         GuiceConfigurer.getInjector().injectMembers(this);
@@ -47,20 +51,20 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
     @Override protected MessageStatus processMessage (final ACLMessage message) {
         final ACLMessage reply = bank.createReply(message);
 
-        final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(CreateAccountRequest.class, new ActionMessageHandler<CreateAccountRequest>() {
-            @Override public MessageStatus handle (CreateAccountRequest action, ACLMessage message) {
+        final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(AccountStatusQueryRef.class, new ActionMessageHandler<AccountStatusQueryRef>() {
+            @Override public MessageStatus handle (AccountStatusQueryRef action, ACLMessage message) {
 
-                final Hotel hotel = action.getHotel();
+                final int account_ID = action.getId_account();
                 try {
-                    int id = bankAccountRepository.createAccount(hotel);
+                    int balance = bankAccountRepository.retrieveBalance(account_ID);
                     reply.setPerformative(ACLMessage.INFORM);
-                    reply.setContent((Integer.toString(id)));
+                    reply.setContent((Integer.toString(balance)));
                     getAgent().send(reply);
-                    logger.info("Sent AGREE as a CreateAccount response");
-                } catch (AccountAlreadyExistsException e) {
+                    logger.info("Informed hotel with the current Balance");
+                } catch (AccountDoesNotExistException e) {
                     reply.setPerformative(ACLMessage.FAILURE);
                     getAgent().send(reply);
-                    logger.info("Sent REFUSE as a CreateAccount response");
+                    logger.info("FAILURE: Mentioned Account does not exist");
                 }
                 return MessageStatus.PROCESSED;
 
