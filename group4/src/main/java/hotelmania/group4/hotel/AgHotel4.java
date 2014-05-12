@@ -33,7 +33,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
     public static final String HOTEL_NAME = "Hotel4";
 
-    private int ACCOUNT_ID;
+    private int accountId;
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -213,7 +213,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
                     // Creating a new AccountStatusQueryRef
                     AccountStatusQueryRef account = new AccountStatusQueryRef();
-                    account.setId_account(ACCOUNT_ID);
+                    account.setId_account(accountId);
 
                     // As it is an action and the encoding language the SL, it must be wrapped
                     // into an Action
@@ -232,5 +232,7 @@ public class AgHotel4 extends HotelManiaAgent {
 
     }
 
-
+    public void setAccountId (Integer accountId) {
+        this.accountId = accountId;
+    }
 }
