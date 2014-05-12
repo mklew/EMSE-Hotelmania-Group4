@@ -32,10 +32,14 @@ import java.util.Date;
 public class AgHotel4 extends HotelManiaAgent {
 
     public static final String HOTEL_NAME = "Hotel4";
+
     private int ACCOUNT_ID;
+
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private SubscriptionInitiator dayEventsNotificationSubscriptionInitiator;
+
+    private int day;
 
     @Override
     protected void setupHotelManiaAgent () {
@@ -109,7 +113,8 @@ public class AgHotel4 extends HotelManiaAgent {
                                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                             }
                             NotificationDayEvent notificationDayEvent = (NotificationDayEvent) content;
-                            logger.info("Received new day event notification. Day {}", notificationDayEvent.getDayEvent().getDay());
+                            day = notificationDayEvent.getDayEvent().getDay();
+                            logger.info("Received new day event notification. Day {}", day);
                         }
                     };
                     addBehaviour(dayEventsNotificationSubscriptionInitiator);
@@ -139,6 +144,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     contract.setRecepcionist_experienced(1);
                     contract.setRecepcionist_novice(2);
                     contract.setRoom_service_staff(6);
+                    contract.setDay(day + 1);
 
                     // making a new hotel and setting its name as "Hotel4"
                     final Hotel hotel = new Hotel();
@@ -192,7 +198,6 @@ public class AgHotel4 extends HotelManiaAgent {
         }));
 
 
-
         // adding behaviour for checking Account Status
         addBehaviour(new SearchForAgent(HotelManiaAgentNames.ACCOUNT_STATUS, this, new ProcessDescriptionFn<Object>() {
             @Override public <T> Optional<T> found (
@@ -220,7 +225,6 @@ public class AgHotel4 extends HotelManiaAgent {
                 return Optional.absent();
             }
         }));
-
 
 
         addBehaviour(new RespondToNumberOfClients(this));
