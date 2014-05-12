@@ -219,7 +219,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     // into an Action
                     Action agentAction = new Action(bank, account);
                     getContentManager().fillContent(newMessage, agentAction);
-                    addBehaviour(new HandleSignContractResponse(AgHotel4.this, bank));
+                    addBehaviour(new HandleAccountStatusResponse(AgHotel4.this, bank));
                     sendMessage(newMessage);
                 }
                 return Optional.absent();

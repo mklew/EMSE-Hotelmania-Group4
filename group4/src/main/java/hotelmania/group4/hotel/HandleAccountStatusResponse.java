@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by azfar on 12/05/2014.
+ * Created by Tahir on 12/05/2014.
  */
 public class HandleAccountStatusResponse extends EmseCyclicBehaviour {
     Logger logger = LoggerFactory.getLogger(getClass());
@@ -37,13 +37,11 @@ public class HandleAccountStatusResponse extends EmseCyclicBehaviour {
             @Override public MessageStatus handle (ACLMessage message) {
                 if (message.getPerformative() == ACLMessage.INFORM) {
 
-                    // TODO: somehow setting this message.getContent() as the the ACCOUNT_ID of hotel
-
-                    logger.info("Received INFORM for successful CreateAccount");
+                    logger.info("Received the AccountSatatus from Bank");
                     gotResponse = true;
                     return MessageStatus.PROCESSED;
                 } else if (message.getPerformative() == ACLMessage.FAILURE) {
-                    logger.info("Received FAILURE as CreateAccount response");
+                    logger.info("Received FAILURE as AccountStatusQueryRef response");
                     gotResponse = true;
                     return MessageStatus.PROCESSED;
                 } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {

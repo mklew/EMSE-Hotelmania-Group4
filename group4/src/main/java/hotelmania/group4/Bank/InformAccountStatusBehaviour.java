@@ -2,9 +2,7 @@ package hotelmania.group4.bank;
 
 import com.google.inject.Inject;
 import hotelmania.group4.behaviours.EmseCyclicBehaviour;
-import hotelmania.group4.behaviours.EmseSimpleBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
-import hotelmania.group4.domain.AccountAlreadyExistsException;
 import hotelmania.group4.domain.BankAccountRepository;
 import hotelmania.group4.domain.internal.AccountDoesNotExistException;
 import hotelmania.group4.guice.GuiceConfigurer;
@@ -13,8 +11,9 @@ import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
 import hotelmania.ontology.Account;
 import hotelmania.ontology.AccountStatusQueryRef;
-import hotelmania.ontology.CreateAccountRequest;
-import hotelmania.ontology.Hotel;
+import jade.content.lang.Codec;
+import jade.content.onto.OntologyException;
+import jade.content.onto.basic.Action;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by azfar on 12/05/2014.
+ * Created by Tahir on 12/05/2014.
  */
 public class InformAccountStatusBehaviour extends EmseCyclicBehaviour {
     Logger logger = LoggerFactory.getLogger(getClass());
@@ -56,9 +55,16 @@ public class InformAccountStatusBehaviour extends EmseCyclicBehaviour {
 
                 final int account_ID = action.getId_account();
                 try {
-                    int balance = bankAccountRepository.retrieveBalance(account_ID);
+                    Account currentAccount = bankAccountRepository.retrieveBalance(account_ID);
                     reply.setPerformative(ACLMessage.INFORM);
-                    reply.setContent((Integer.toString(balance)));
+                    Action agentAction = new Action(message.getSender(), currentAccount);
+                    try {
+                        getAgent().getContentManager().fillContent(reply, agentAction);
+                    } catch (Codec.CodecException e) {
+                        e.printStackTrace();
+                    } catch (OntologyException e) {
+                        e.printStackTrace();
+                    }
                     getAgent().send(reply);
                     logger.info("Informed hotel with the current Balance");
                 } catch (AccountDoesNotExistException e) {

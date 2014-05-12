@@ -2,6 +2,7 @@ package hotelmania.group4.domain.internal;
 
 import hotelmania.group4.domain.AccountAlreadyExistsException;
 import hotelmania.group4.domain.BankAccountRepository;
+import hotelmania.ontology.Account;
 import hotelmania.ontology.Hotel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,11 @@ public class InMemoryBankAccountRepository implements BankAccountRepository {
             if (accounts.isEmpty())
             {
                 int balance = 100;
-                accounts.put(1001, balance);
+                Account newAccount = new Account();
+                newAccount.setBalance(balance);
+                newAccount.setHotel(hotel);
+                newAccount.setId_account(1001);
+                accounts.put(1001, newAccount);
                 logger.info("Created Account with ID 1001 in Bank4");
                 return 1001;
             }
@@ -37,15 +42,22 @@ public class InMemoryBankAccountRepository implements BankAccountRepository {
             {
                 int balance = 100;
                 int key = 1000 + accounts.size();
-                accounts.put(key, balance);
+                Account newAccount = new Account();
+                newAccount.setBalance(balance);
+                newAccount.setHotel(hotel);
+                newAccount.setId_account(key);
+
+                accounts.put(key, newAccount);
                 logger.info("Created Account with ID {} in Bank4", key);
                 return key;
             }
         }
     }
 
-    public synchronized int retrieveBalance (int account_ID) throws AccountDoesNotExistException
+    public synchronized Account retrieveBalance (int account_ID) throws AccountDoesNotExistException
     {
-        return (int)accounts.get(account_ID);
+        Account account = (Account)accounts.get(account_ID);
+
+        return account;
     }
 }
