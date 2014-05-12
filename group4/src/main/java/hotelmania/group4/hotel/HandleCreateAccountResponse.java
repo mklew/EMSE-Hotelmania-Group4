@@ -23,8 +23,11 @@ class HandleCreateAccountResponse extends EmseSimpleBehaviour {
 
     private boolean gotResponse = false;
 
+    private AgHotel4 agHotel4;
+
     public HandleCreateAccountResponse (AgHotel4 agHotel4, AID aid) {
         super(agHotel4);
+        this.agHotel4 = agHotel4;
         this.bank = aid;
     }
 
@@ -37,7 +40,7 @@ class HandleCreateAccountResponse extends EmseSimpleBehaviour {
             @Override public MessageStatus handle (ACLMessage message) {
                 if (message.getPerformative() == ACLMessage.INFORM) {
 
-                    // TODO: somehow setting this message.getContent() as the the ACCOUNT_ID of hotel
+                    agHotel4.setAccountId(Integer.valueOf(message.getContent()));
 
                     logger.info("Received INFORM for successful CreateAccount");
                     gotResponse = true;
@@ -62,6 +65,7 @@ class HandleCreateAccountResponse extends EmseSimpleBehaviour {
         });
         return messageMatchingChain.handleMessage(message);
     }
+
     @Override public boolean done () {
         return gotResponse;
     }
