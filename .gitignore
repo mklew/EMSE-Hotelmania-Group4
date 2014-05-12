@@ -12,3 +12,5 @@ target/*
 **/target/*
 *.iml
 **/*.iml
+APDescription.txt
+MTPs-Main-Container.txt
