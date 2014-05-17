@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.utils.Utils;
+import jade.content.lang.Codec;
+import jade.content.onto.OntologyException;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -44,7 +46,12 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
         if (aclMessageOptional.isPresent()) {
             logger.debug("Received message {}", receive.toString());
             final ACLMessage message = aclMessageOptional.get();
-            final MessageStatus messageStatus = processMessage(message);
+            MessageStatus messageStatus = MessageStatus.NOT_PROCESSED;
+            try {
+                messageStatus = processMessage(message);
+            } catch (Codec.CodecException | OntologyException e) {
+                logger.error("Error", e);
+            }
             if (messageStatus.equals(MessageStatus.NOT_PROCESSED)) {
                 logger.debug("Message has not been processed. Putting it back to message queue for other behaviours");
                 getAgent().putBack(message);
@@ -56,7 +63,7 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
 
     protected abstract List<MessageTemplate> getMessageTemplates ();
 
-    protected abstract MessageStatus processMessage (ACLMessage message);
+    protected abstract MessageStatus processMessage (ACLMessage message) throws Codec.CodecException, OntologyException;
 
     protected HotelManiaAgent getHotelManiaAgent () {
         return agent;

@@ -29,7 +29,7 @@ public class AgPlatform4 extends HotelManiaAgent {
         logger.debug("setting up agent");
         try {
             // Creates its own description
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), REGISTRATION);
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), REGISTRATION, QUERY_HOTELMANIA_INFORMATION);
             // Registers its description in the DF
             DFService.register(this, dfd);
             logger.info(getLocalName() + ": registered in the DF");
@@ -38,6 +38,7 @@ public class AgPlatform4 extends HotelManiaAgent {
         }
 
         addBehaviour(new RegistrationBehaviour(this));
+        addBehaviour(new QueryInformationBehaviour(this));
 
         Utils.runAgent(this, HotelManiaAgentNames.SUBSCRIBE_TO_DAY_EVENT, AgSimulator4.class);
 

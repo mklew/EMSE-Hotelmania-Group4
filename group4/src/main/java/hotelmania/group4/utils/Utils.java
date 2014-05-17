@@ -25,12 +25,14 @@ public class Utils {
         return dfd;
     }
 
-    public static DFAgentDescription createAgentDescriptionWithNameAndType (String name, String type) {
+    public static DFAgentDescription createAgentDescriptionWithNameAndType (String name, String ... types) {
         DFAgentDescription dfd = new DFAgentDescription();
-        ServiceDescription sd = new ServiceDescription();
-        sd.setName(name);
-        sd.setType(type);
-        dfd.addServices(sd);
+        for(String type : types) {
+            ServiceDescription sd = new ServiceDescription();
+            sd.setName(name);
+            sd.setType(type);
+            dfd.addServices(sd);
+        }
         return dfd;
     }
 
