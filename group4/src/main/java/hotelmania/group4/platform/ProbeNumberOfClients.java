@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
 import hotelmania.group4.domain.HotelRepositoryService;
-import hotelmania.group4.domain.HotelWithAgent;
 import hotelmania.group4.guice.GuiceConfigurer;
+import hotelmania.ontology.Hotel;
 import hotelmania.ontology.NumberOfClientsQueryRef;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -38,17 +38,15 @@ public class ProbeNumberOfClients extends TickerBehaviour {
 
     @Override protected void onTick () {
         logger.debug("Probing number of clients");
-        final Set<HotelWithAgent> hotels = hotelRepositoryService.getHotels();
+        final Set<Hotel> hotels = hotelRepositoryService.getHotels();
 
-        for (HotelWithAgent hotel : hotels) {
-
-            final ACLMessage aclMessage = agent.createMessage(hotel.getAgent(), ACLMessage.QUERY_REF);
+        for (Hotel hotel : hotels) {
+            final ACLMessage aclMessage = agent.createMessage(hotel.getHotelAgent(), ACLMessage.QUERY_REF);
             aclMessage.setProtocol(HotelManiaAgentNames.NUMBER_OF_CLIENTS);
 
             NumberOfClientsQueryRef numberOfClientsQueryRef = new NumberOfClientsQueryRef();
-            numberOfClientsQueryRef.setHotel_name(hotel.getHotelName());
 
-            Action agAction = new Action(hotel.getAgent(), numberOfClientsQueryRef);
+            Action agAction = new Action(hotel.getHotelAgent(), numberOfClientsQueryRef);
             try {
                 agent.getContentManager().fillContent(aclMessage, agAction);
             } catch (Codec.CodecException e) {

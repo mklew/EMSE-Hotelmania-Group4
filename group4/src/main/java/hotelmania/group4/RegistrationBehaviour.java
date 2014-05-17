@@ -5,7 +5,6 @@ import hotelmania.group4.behaviours.EmseCyclicBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.domain.HotelAlreadyRegisteredException;
 import hotelmania.group4.domain.HotelRepositoryService;
-import hotelmania.group4.domain.HotelWithAgent;
 import hotelmania.group4.guice.GuiceConfigurer;
 import hotelmania.group4.platform.AgPlatform4;
 import hotelmania.group4.utils.ActionMessageHandler;
@@ -54,9 +53,9 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(RegistrationRequest.class, new ActionMessageHandler<RegistrationRequest>() {
             @Override public MessageStatus handle (RegistrationRequest action, ACLMessage message) {
                 final Hotel hotel = action.getHotel();
-                final HotelWithAgent hotelWithAgent = new HotelWithAgent(hotel, message.getSender());
+                hotel.setHotelAgent(message.getSender());
                 try {
-                    hotelRepositoryService.registerHotel(hotelWithAgent);
+                    hotelRepositoryService.registerHotel(hotel);
                     reply.setPerformative(ACLMessage.AGREE);
                 } catch (HotelAlreadyRegisteredException e) {
                     reply.setPerformative(ACLMessage.REFUSE);

@@ -1,6 +1,8 @@
 package hotelmania.group4.domain;
 
 
+import hotelmania.ontology.Hotel;
+
 import java.util.Set;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Set;
  */
 public interface HotelRepositoryService {
 
-    void registerHotel (HotelWithAgent hotel) throws HotelAlreadyRegisteredException;
+    void registerHotel (Hotel hotel) throws HotelAlreadyRegisteredException;
 
-    Set<HotelWithAgent> getHotels();
+    Set<Hotel> getHotels ();
 }

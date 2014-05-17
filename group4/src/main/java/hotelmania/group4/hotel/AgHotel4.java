@@ -71,6 +71,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     RegistrationRequest registrationRequest = new RegistrationRequest();
                     final Hotel hotel = new Hotel();
                     hotel.setHotel_name(HOTEL_NAME);
+                    hotel.setHotelAgent(getAID());
                     registrationRequest.setHotel(hotel);
 
                     // As it is an action and the encoding language the SL, it must be wrapped
