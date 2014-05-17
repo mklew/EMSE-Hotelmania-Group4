@@ -24,4 +24,5 @@ public interface HotelManiaAgentNames {
 
     static final String QUERY_HOTELMANIA_INFORMATION = "QueryHotelmaniaInformation";
 
+    static final String BOOKING_OFFER = "BookingOffer";
 }

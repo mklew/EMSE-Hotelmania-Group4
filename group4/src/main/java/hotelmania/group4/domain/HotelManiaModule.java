@@ -2,9 +2,7 @@ package hotelmania.group4.domain;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import hotelmania.group4.domain.internal.HotelManiaCalendarImpl;
-import hotelmania.group4.domain.internal.InMemoryBankAccountRepository;
-import hotelmania.group4.domain.internal.InMemoryHotelRepositoryService;
+import hotelmania.group4.domain.internal.*;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
@@ -19,5 +17,9 @@ public class HotelManiaModule extends AbstractModule {
         bind(BankAccountRepository.class).to(InMemoryBankAccountRepository.class).in(Scopes.SINGLETON);
 
         bind(HotelManiaCalendar.class).to(HotelManiaCalendarImpl.class).in(Scopes.SINGLETON);
+
+        bind(Hotel4.class).to(Hotel4Impl.class).in(Scopes.SINGLETON);
+
+        bind(PriceStrategy.class).to(DummyPriceStrategy.class).in(Scopes.SINGLETON);
     }
 }
