@@ -28,4 +28,5 @@ public interface HotelManiaAgentNames {
 
     static final String BOOK_A_ROOM = "BookARoom";
 
+    static final String END_SIMULATION = "EndSimulation";
 }

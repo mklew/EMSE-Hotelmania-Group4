@@ -28,18 +28,23 @@ import java.util.Vector;
 
 /**
  * @author Alberth Montero <alberthm@gmail.com>
+ * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
  * @since 5/6/14
  */
 public class AgSimulator4 extends HotelManiaAgent {
 
-    public static final int DEFAULT_TIME_FOR_DAY = 5000;
+    public static final int DEFAULT_TIME_FOR_DAY = 5000; // TODO read it from settings
+
+    public static final int DEFAULT_SIMULATION_LENGTH = 50; // TODO read it from settings and use to check if simulation should end
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    private SubscriptionResponder subscriptionResponder;
+    private SubscriptionResponder dayEventsNotificationsSubscriptionResponder;
 
     @Inject
     HotelManiaCalendar calendar;
+
+    private SubscriptionResponder endOfSimulationSubscriptionResponder;
 
     @Override
     protected void setupHotelManiaAgent () {
@@ -50,7 +55,7 @@ public class AgSimulator4 extends HotelManiaAgent {
         logger.debug("setting up agent");
         try {
             // Creates its own description
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), SUBSCRIBE_TO_DAY_EVENT);
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), SUBSCRIBE_TO_DAY_EVENT, END_SIMULATION);
             // Registers its description in the DF
             DFService.register(this, dfd);
             logger.info(getLocalName() + ": registered in the DF");
@@ -65,13 +70,63 @@ public class AgSimulator4 extends HotelManiaAgent {
             e.printStackTrace();
         }
 
+        dayEventsNotificationsSubscriptionResponder = createDayEventsNotificationsSubscriptionsResponder();
+        addBehaviour(dayEventsNotificationsSubscriptionResponder);
+
+        endOfSimulationSubscriptionResponder = createEndOfSimulationSubscriptionsResponder();
+        addBehaviour(endOfSimulationSubscriptionResponder);
+
+        addBehaviour(new TickerBehaviour(this, DEFAULT_TIME_FOR_DAY) {
+            protected void onTick () {
+                if (simulationShouldEnd()) {
+                    sendEndOfSimulationMessages();
+                } else {
+                    final NotificationDayEvent notificationDayEvent = new NotificationDayEvent();
+                    notificationDayEvent.setDayEvent(calendar.today());
+
+                    final Vector subscriptions = dayEventsNotificationsSubscriptionResponder.getSubscriptions();
+                    for (Object obj : subscriptions) {
+                        SubscriptionResponder.Subscription subscription = (SubscriptionResponder.Subscription) obj;
+                        final ACLMessage reply = subscription.getMessage().createReply();
+                        reply.setPerformative(ACLMessage.INFORM);
+
+                        try {
+                            getContentManager().fillContent(reply, notificationDayEvent);
+                        } catch (Codec.CodecException | OntologyException e) {
+                            e.printStackTrace();
+                        }
+
+                        subscription.notify(reply);
+                    }
+                }
+                calendar.dayPassed();
+            }
+        });
+    }
+
+    private void sendEndOfSimulationMessages () {
+        final Vector subscriptions = endOfSimulationSubscriptionResponder.getSubscriptions();
+        for (Object obj : subscriptions) {
+            SubscriptionResponder.Subscription subscription = (SubscriptionResponder.Subscription) obj;
+            final ACLMessage reply = subscription.getMessage().createReply();
+            reply.setPerformative(ACLMessage.INFORM);
+            reply.setProtocol(END_SIMULATION);
+            subscription.notify(reply);
+        }
+    }
+
+    private boolean simulationShouldEnd () {
+        return calendar.today().getDay() > DEFAULT_SIMULATION_LENGTH;
+    }
+
+    private EmseSubscriptionResponder createDayEventsNotificationsSubscriptionsResponder () {
         MessageTemplate messageTemplate = Utils.messageTemplateConjunction(Arrays.asList(
                 MessageTemplate.MatchLanguage(getCodec().getName()),
                 MessageTemplate.MatchOntology(getOntology().getName()),
                 MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE),
                 MessageTemplate.MatchProtocol(SUBSCRIBE_TO_DAY_EVENT)
         ));
-        subscriptionResponder = new EmseSubscriptionResponder(this, messageTemplate, new SubscriptionResponder.SubscriptionManager() {
+        return new EmseSubscriptionResponder(this, messageTemplate, new SubscriptionResponder.SubscriptionManager() {
             @Override public boolean register (
                     SubscriptionResponder.Subscription subscription) throws RefuseException, NotUnderstoodException {
                 final AID sender = subscription.getMessage().getSender();
@@ -87,33 +142,32 @@ public class AgSimulator4 extends HotelManiaAgent {
             }
 
         });
-        addBehaviour(subscriptionResponder);
+    }
 
-        // for sending the day change - ? Implement
-        addBehaviour(new TickerBehaviour(this, DEFAULT_TIME_FOR_DAY) {
-            protected void onTick () {
-                final NotificationDayEvent notificationDayEvent = new NotificationDayEvent();
-                notificationDayEvent.setDayEvent(calendar.today());
+    private EmseSubscriptionResponder createEndOfSimulationSubscriptionsResponder () {
+        MessageTemplate messageTemplate = Utils.messageTemplateConjunction(Arrays.asList(
+                MessageTemplate.MatchLanguage(getCodec().getName()),
+                MessageTemplate.MatchOntology(getOntology().getName()),
+                MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE),
+                MessageTemplate.MatchProtocol(END_SIMULATION)
+        ));
+        return new EmseSubscriptionResponder(this, messageTemplate, new SubscriptionResponder.SubscriptionManager() {
+            @Override public boolean register (
+                    SubscriptionResponder.Subscription subscription) throws RefuseException, NotUnderstoodException {
+                final AID sender = subscription.getMessage().getSender();
+                logger.info("Agent {} subscribed to end of simulation", sender);
+                return true;  // return value is ignored by default implementation of SubscriptionResponder
+            }
 
-                final Vector subscriptions = subscriptionResponder.getSubscriptions();
-                for (Object obj : subscriptions) {
-                    SubscriptionResponder.Subscription subscription = (SubscriptionResponder.Subscription) obj;
-                    final ACLMessage reply = subscription.getMessage().createReply();
-                    reply.setPerformative(ACLMessage.INFORM);
-
-                    try {
-                        getContentManager().fillContent(reply, notificationDayEvent);
-                    } catch (Codec.CodecException | OntologyException e) {
-                        e.printStackTrace();
-                    }
-
-                    subscription.notify(reply);
-                }
-
-                calendar.dayPassed();
+            @Override
+            public boolean deregister (SubscriptionResponder.Subscription subscription) throws FailureException {
+                final AID sender = subscription.getMessage().getSender();
+                logger.info("Agent {} unsubscribed from end of simulation", sender);
+                return true;  // return value is ignored by default implementation of SubscriptionResponder
             }
         });
     }
+
 }
 
 
