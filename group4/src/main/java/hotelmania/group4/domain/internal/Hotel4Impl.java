@@ -32,4 +32,8 @@ public class Hotel4Impl implements PriceStrategy, Hotel4 {
     @Override public boolean hasEmptyRooms (Stay stay) {
         return bookingCalendar.isThereFreeRoom(stay);
     }
+
+    @Override public int getNumberOfClientsAtDay (int day) {
+        return bookingCalendar.getNumberOfClientsAtDayNumber(day);
+    }
 }

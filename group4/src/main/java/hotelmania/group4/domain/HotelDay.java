@@ -28,4 +28,8 @@ public class HotelDay {
     boolean isRoomAvailable (Room room) {
         return !bookedRooms.contains(room);
     }
+
+    public int numberOfClients () {
+        return bookedRooms.size();
+    }
 }

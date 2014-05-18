@@ -103,4 +103,8 @@ public class BookingCalendar {
     }
 
 
+    public int getNumberOfClientsAtDayNumber (int day) {
+        final HotelDay hotelDay = getHotelDay(day);
+        return hotelDay.numberOfClients();
+    }
 }
