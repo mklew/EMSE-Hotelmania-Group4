@@ -3,6 +3,8 @@ package hotelmania.group4.domain;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import hotelmania.group4.domain.internal.*;
+import hotelmania.group4.settings.DummySettings;
+import hotelmania.group4.settings.Settings;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
@@ -21,5 +23,7 @@ public class HotelManiaModule extends AbstractModule {
         bind(Hotel4.class).to(Hotel4Impl.class).in(Scopes.SINGLETON);
 
         bind(PriceStrategy.class).to(DummyPriceStrategy.class).in(Scopes.SINGLETON);
+
+        bind(Settings.class).to(DummySettings.class).in(Scopes.SINGLETON);
     }
 }
