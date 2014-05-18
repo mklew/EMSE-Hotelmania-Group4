@@ -13,4 +13,6 @@ public interface Hotel4 {
     boolean hasEmptyRooms (Stay stay);
 
     int getNumberOfClientsAtDay (int day);
+
+    void bookRoomFor (Stay stay, Price agreedPrice) throws NoRoomsAvailableException, CurrentPriceIsHigherException;
 }

@@ -107,4 +107,19 @@ public class BookingCalendar {
         final HotelDay hotelDay = getHotelDay(day);
         return hotelDay.numberOfClients();
     }
+
+    public void bookFirstFreeRoom (Stay stay) throws NoRoomsAvailableException {
+        reentrantLock.lock();
+        try {
+            final Room freeRoom = getFreeRoom(stay);
+            try {
+                bookRoomForStay(freeRoom, stay);
+            } catch (RoomHasBeenAlreadyBookedException e) {
+                throw new RuntimeException("Possible concurrency issue, unexpected error", e);
+            }
+        } finally {
+            reentrantLock.unlock();
+        }
+
+    }
 }

@@ -13,7 +13,6 @@ import java.util.Set;
  * @since 17/05/14
  */
 public class Hotel4Impl implements PriceStrategy, Hotel4 {
-
     @Inject
     PriceStrategy priceStrategy;
 
@@ -35,5 +34,19 @@ public class Hotel4Impl implements PriceStrategy, Hotel4 {
 
     @Override public int getNumberOfClientsAtDay (int day) {
         return bookingCalendar.getNumberOfClientsAtDayNumber(day);
+    }
+
+    @Override public void bookRoomFor (Stay stay,
+                                       Price agreedPrice) throws NoRoomsAvailableException, CurrentPriceIsHigherException {
+        final Price currentPrice = priceStrategy.getPriceFor(stay);
+        if (agreedPriceIsHigherOrEqualToCurrentPrice(agreedPrice, currentPrice)) {
+            bookingCalendar.bookFirstFreeRoom(stay);
+        } else {
+            throw new CurrentPriceIsHigherException(currentPrice, agreedPrice);
+        }
+    }
+
+    private boolean agreedPriceIsHigherOrEqualToCurrentPrice (Price agreedPrice, Price currentPrice) {
+        return Float.compare(currentPrice.getPrice(), agreedPrice.getPrice()) <= 0;
     }
 }
