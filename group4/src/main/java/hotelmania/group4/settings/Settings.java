@@ -10,4 +10,6 @@ public interface Settings {
     // TODO do more
 
     double getBudgetVariance();
+
+    int getSimulationDays();
 }

@@ -13,4 +13,8 @@ public class DummySettings implements Settings {
     @Override public double getBudgetVariance () {
         return 100;
     }
+
+    @Override public int getSimulationDays () {
+        return 50;
+    }
 }
