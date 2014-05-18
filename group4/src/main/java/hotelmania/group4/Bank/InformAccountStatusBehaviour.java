@@ -47,29 +47,25 @@ public class InformAccountStatusBehaviour extends EmseCyclicBehaviour {
         return Arrays.asList(withCodec, withOntology, withRequestPerformative);
     }
 
-    @Override protected MessageStatus processMessage (final ACLMessage message) throws Codec.CodecException, OntologyException {
+    @Override
+    protected MessageStatus processMessage (final ACLMessage message) throws Codec.CodecException, OntologyException {
         final ACLMessage reply = bank.createReply(message);
 
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(AccountStatusQueryRef.class, new ActionMessageHandler<AccountStatusQueryRef>() {
-            @Override public MessageStatus handle (AccountStatusQueryRef action, ACLMessage message) {
+            @Override public MessageStatus handle (AccountStatusQueryRef action,
+                                                   ACLMessage message) throws Codec.CodecException, OntologyException {
 
                 final int account_ID = action.getId_account();
                 try {
                     Account currentAccount = bankAccountRepository.retrieveBalance(account_ID);
                     reply.setPerformative(ACLMessage.INFORM);
                     Action agentAction = new Action(message.getSender(), currentAccount);
-                    try {
-                        getAgent().getContentManager().fillContent(reply, agentAction);
-                    } catch (Codec.CodecException e) {
-                        e.printStackTrace();
-                    } catch (OntologyException e) {
-                        e.printStackTrace();
-                    }
-                    getAgent().send(reply);
+                    getAgent().getContentManager().fillContent(reply, agentAction);
+                    getHotelManiaAgent().sendMessage(reply);
                     logger.info("Informed hotel with the current Balance");
                 } catch (AccountDoesNotExistException e) {
                     reply.setPerformative(ACLMessage.FAILURE);
-                    getAgent().send(reply);
+                    getHotelManiaAgent().sendMessage(reply);
                     logger.info("FAILURE: Mentioned Account does not exist");
                 }
                 return MessageStatus.PROCESSED;
@@ -79,7 +75,7 @@ public class InformAccountStatusBehaviour extends EmseCyclicBehaviour {
             @Override
             public MessageStatus handle (ACLMessage message) {
                 reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-                getAgent().send(reply);
+                getHotelManiaAgent().sendMessage(reply);
                 logger.info("Sent NOT_UNDERSTOOD as a CreateAccount response");
                 return MessageStatus.PROCESSED;
             }

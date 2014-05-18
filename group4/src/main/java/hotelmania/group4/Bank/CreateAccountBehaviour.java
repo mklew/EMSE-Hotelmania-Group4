@@ -48,11 +48,13 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
         return Arrays.asList(withCodec, withOntology, withRequestPerformative);
     }
 
-    @Override protected MessageStatus processMessage (final ACLMessage message) throws Codec.CodecException, OntologyException {
+    @Override
+    protected MessageStatus processMessage (final ACLMessage message) throws Codec.CodecException, OntologyException {
         final ACLMessage reply = bank.createReply(message);
 
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(CreateAccountRequest.class, new ActionMessageHandler<CreateAccountRequest>() {
-            @Override public MessageStatus handle (CreateAccountRequest action, ACLMessage message) {
+            @Override public MessageStatus handle (CreateAccountRequest action,
+                                                   ACLMessage message) throws Codec.CodecException, OntologyException {
 
                 final Hotel hotel = action.getHotel();
                 try {
@@ -62,19 +64,13 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
                     AccountStatus accountStatus = new AccountStatus();
                     accountStatus.setAccount(newAccount);
 
-                    try {
-                        myAgent.getContentManager().fillContent(reply, accountStatus);
-                    } catch (Codec.CodecException e) {
-                        e.printStackTrace();
-                    } catch (OntologyException e) {
-                        e.printStackTrace();
-                    }
+                    myAgent.getContentManager().fillContent(reply, accountStatus);
 
-                    getAgent().send(reply);
+                    getHotelManiaAgent().sendMessage(reply);
                     logger.info("Sent AGREE as a CreateAccount response");
                 } catch (AccountAlreadyExistsException e) {
                     reply.setPerformative(ACLMessage.FAILURE);
-                    getAgent().send(reply);
+                    getHotelManiaAgent().sendMessage(reply);
                     logger.info("Sent REFUSE as a CreateAccount response");
                 }
                 return MessageStatus.PROCESSED;
@@ -84,7 +80,7 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
             @Override
             public MessageStatus handle (ACLMessage message) {
                 reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-                getAgent().send(reply);
+                getHotelManiaAgent().sendMessage(reply);
                 logger.info("Sent NOT_UNDERSTOOD as a CreateAccount response");
                 return MessageStatus.PROCESSED;
             }
