@@ -26,6 +26,6 @@ public class HotelDay {
     }
 
     boolean isRoomAvailable (Room room) {
-        return bookedRooms.contains(room);
+        return !bookedRooms.contains(room);
     }
 }
