@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.domain.HotelManiaCalendar;
 import hotelmania.group4.guice.GuiceConfigurer;
+import hotelmania.group4.utils.EmseSubscriptionResponder;
 import hotelmania.group4.utils.Utils;
 import hotelmania.ontology.NotificationDayEvent;
 import jade.content.lang.Codec;
@@ -23,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.UUID;
 import java.util.Vector;
 
 /**
@@ -71,7 +71,7 @@ public class AgSimulator4 extends HotelManiaAgent {
                 MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE),
                 MessageTemplate.MatchProtocol(SUBSCRIBE_TO_DAY_EVENT)
         ));
-        subscriptionResponder = new SubscriptionResponder(this, messageTemplate, new SubscriptionResponder.SubscriptionManager() {
+        subscriptionResponder = new EmseSubscriptionResponder(this, messageTemplate, new SubscriptionResponder.SubscriptionManager() {
             @Override public boolean register (
                     SubscriptionResponder.Subscription subscription) throws RefuseException, NotUnderstoodException {
                 final AID sender = subscription.getMessage().getSender();
@@ -86,25 +86,7 @@ public class AgSimulator4 extends HotelManiaAgent {
                 return true;  // return value is ignored by default implementation of SubscriptionResponder
             }
 
-
-        }) {
-            @Override
-            protected ACLMessage handleSubscription (
-                    ACLMessage subscription) throws NotUnderstoodException, RefuseException {
-                if (subscription.getConversationId() == null) {
-                    final String conversationId = subscription.getSender().getName() + " " + UUID.randomUUID().toString();
-                    subscription.setConversationId(conversationId);
-                }
-                final ACLMessage aclMessage = super.handleSubscription(subscription);
-                if (aclMessage == null) {
-                    final ACLMessage reply = subscription.createReply();
-                    reply.setPerformative(ACLMessage.AGREE);
-                    return reply;
-                } else {
-                    return aclMessage;
-                }
-            }
-        };
+        });
         addBehaviour(subscriptionResponder);
 
         // for sending the day change - ? Implement
