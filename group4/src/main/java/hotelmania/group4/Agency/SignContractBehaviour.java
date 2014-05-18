@@ -9,6 +9,8 @@ import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
 import hotelmania.ontology.SignContract;
+import jade.content.lang.Codec;
+import jade.content.onto.OntologyException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;
@@ -42,7 +44,7 @@ public class SignContractBehaviour extends EmseCyclicBehaviour {
         return Arrays.asList(withCodec, withOntology, withRequestPerformative);
     }
 
-    @Override protected MessageStatus processMessage (final ACLMessage message) {
+    @Override protected MessageStatus processMessage (final ACLMessage message) throws Codec.CodecException, OntologyException {
         final ACLMessage reply = agency.createReply(message);
 
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(SignContract.class, new ActionMessageHandler<SignContract>() {

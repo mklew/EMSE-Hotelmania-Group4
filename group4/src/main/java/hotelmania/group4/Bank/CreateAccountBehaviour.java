@@ -13,10 +13,8 @@ import hotelmania.ontology.Account;
 import hotelmania.ontology.AccountStatus;
 import hotelmania.ontology.CreateAccountRequest;
 import hotelmania.ontology.Hotel;
-import jade.content.Predicate;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
-import jade.content.onto.basic.Action;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;
@@ -50,7 +48,7 @@ public class CreateAccountBehaviour extends EmseCyclicBehaviour {
         return Arrays.asList(withCodec, withOntology, withRequestPerformative);
     }
 
-    @Override protected MessageStatus processMessage (final ACLMessage message) {
+    @Override protected MessageStatus processMessage (final ACLMessage message) throws Codec.CodecException, OntologyException {
         final ACLMessage reply = bank.createReply(message);
 
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(CreateAccountRequest.class, new ActionMessageHandler<CreateAccountRequest>() {

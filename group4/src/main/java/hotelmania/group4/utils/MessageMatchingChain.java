@@ -4,6 +4,8 @@ package hotelmania.group4.utils;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import hotelmania.group4.behaviours.MessageStatus;
+import jade.content.lang.Codec;
+import jade.content.onto.OntologyException;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 
@@ -45,7 +47,7 @@ public class MessageMatchingChain {
         return this;
     }
 
-    public MessageStatus handleMessage (ACLMessage message) {
+    public MessageStatus handleMessage (ACLMessage message) throws Codec.CodecException, OntologyException {
         MessageStatus messageStatus = MessageStatus.NOT_PROCESSED;
         for (ActionMatcher<?> actionMatcher : actionMatchers) {
             messageStatus = actionMatcher.tryToHandle(message);

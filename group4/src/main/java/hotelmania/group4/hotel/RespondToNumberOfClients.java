@@ -37,7 +37,7 @@ public class RespondToNumberOfClients extends EmseCyclicBehaviour {
         return Arrays.asList(withCodec, withOntology, withRequestPerformative, withProtocolName);
     }
 
-    @Override protected MessageStatus processMessage (ACLMessage message) {
+    @Override protected MessageStatus processMessage (ACLMessage message) throws Codec.CodecException, OntologyException {
 
 
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getHotelManiaAgent()).withActionMatcher(NumberOfClientsQueryRef.class, new ActionMessageHandler<NumberOfClientsQueryRef>() {

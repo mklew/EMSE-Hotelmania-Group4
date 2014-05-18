@@ -12,6 +12,8 @@ import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
 import hotelmania.ontology.Hotel;
 import hotelmania.ontology.RegistrationRequest;
+import jade.content.lang.Codec;
+import jade.content.onto.OntologyException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;
@@ -47,7 +49,7 @@ public class RegistrationBehaviour extends EmseCyclicBehaviour {
         return Arrays.asList(withCodec, withOntology, withRequestPerformative);
     }
 
-    @Override protected MessageStatus processMessage (final ACLMessage message) {
+    @Override protected MessageStatus processMessage (final ACLMessage message) throws Codec.CodecException, OntologyException {
         final ACLMessage reply = platform.createReply(message);
 
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(RegistrationRequest.class, new ActionMessageHandler<RegistrationRequest>() {

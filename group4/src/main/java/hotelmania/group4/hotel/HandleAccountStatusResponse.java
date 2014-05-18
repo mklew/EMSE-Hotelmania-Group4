@@ -4,6 +4,8 @@ import hotelmania.group4.behaviours.EmseCyclicBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
+import jade.content.lang.Codec;
+import jade.content.onto.OntologyException;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -32,7 +34,7 @@ public class HandleAccountStatusResponse extends EmseCyclicBehaviour {
         return Arrays.asList(MessageTemplate.MatchSender(bank));
     }
 
-    @Override protected MessageStatus processMessage (ACLMessage message) {
+    @Override protected MessageStatus processMessage (ACLMessage message) throws Codec.CodecException, OntologyException {
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withMessageHandler(new MessageHandler() {
             @Override public MessageStatus handle (ACLMessage message) {
                 if (message.getPerformative() == ACLMessage.INFORM) {

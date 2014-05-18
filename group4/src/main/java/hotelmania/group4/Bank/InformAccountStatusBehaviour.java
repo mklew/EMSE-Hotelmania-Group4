@@ -47,7 +47,7 @@ public class InformAccountStatusBehaviour extends EmseCyclicBehaviour {
         return Arrays.asList(withCodec, withOntology, withRequestPerformative);
     }
 
-    @Override protected MessageStatus processMessage (final ACLMessage message) {
+    @Override protected MessageStatus processMessage (final ACLMessage message) throws Codec.CodecException, OntologyException {
         final ACLMessage reply = bank.createReply(message);
 
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withActionMatcher(AccountStatusQueryRef.class, new ActionMessageHandler<AccountStatusQueryRef>() {
