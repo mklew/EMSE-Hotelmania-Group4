@@ -25,7 +25,7 @@ public class BookingCalendarTest {
 
     private BookingCalendar bookingCalendar;
 
-    @BeforeMethod
+    @BeforeMethod(firstTimeOnly = true)
     public void before () {
         bookingCalendar = new BookingCalendar(rooms);
     }
@@ -111,6 +111,20 @@ public class BookingCalendarTest {
         }
 
         bookingCalendar.bookRoomForStay(room1, overlappingStay);
+    }
+
+    /**
+     * This test works but is disabled due to Maven Surefire BUG http://jira.codehaus.org/browse/SUREFIRE-654
+     * @throws RoomHasBeenAlreadyBookedException
+     */
+
+    @Test(invocationCount = 100, threadPoolSize = 5, successPercentage = 1, timeOut = 500, enabled = false)
+    public void only_one_should_be_able_to_book_room_at_same_time() throws RoomHasBeenAlreadyBookedException {
+        final Stay stay1 = new Stay();
+        stay1.setCheckIn(3);
+        stay1.setCheckOut(6);
+
+        bookingCalendar.bookRoomForStay(room1, stay1);
     }
 
 }
