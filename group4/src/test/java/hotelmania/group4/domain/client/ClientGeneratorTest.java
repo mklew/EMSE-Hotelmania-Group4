@@ -29,6 +29,10 @@ public class ClientGeneratorTest {
             @Override public int getSimulationDays () {
                 return SIMULATION_DAYS;
             }
+
+            @Override public int getNumberOfNewClientsPerDay () {
+                return 10;
+            }
         });
         final Random random = new Random();
         final int currentDay = random.nextInt(SIMULATION_DAYS);

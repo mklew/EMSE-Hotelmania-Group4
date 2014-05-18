@@ -12,4 +12,6 @@ public interface Settings {
     double getBudgetVariance();
 
     int getSimulationDays();
+
+    int getNumberOfNewClientsPerDay();
 }

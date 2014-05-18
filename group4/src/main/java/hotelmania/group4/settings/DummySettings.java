@@ -17,4 +17,8 @@ public class DummySettings implements Settings {
     @Override public int getSimulationDays () {
         return 50;
     }
+
+    @Override public int getNumberOfNewClientsPerDay () {
+        return 10;
+    }
 }
