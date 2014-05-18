@@ -10,6 +10,7 @@ import hotelmania.group4.domain.NoRoomsAvailableException;
 import hotelmania.group4.guice.GuiceConfigurer;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
+import hotelmania.ontology.BookingOffer;
 import hotelmania.ontology.Price;
 import hotelmania.ontology.Stay;
 import jade.content.ContentElement;
@@ -42,7 +43,7 @@ public class BookingOfferBehaviour extends EmseCyclicBehaviour {
     @Override protected List<MessageTemplate> getMessageTemplates () {
         final MessageTemplate withCodec = MessageTemplate.MatchLanguage(getHotelManiaAgent().getCodec().getName());
         final MessageTemplate withOntology = MessageTemplate.MatchOntology(getHotelManiaAgent().getOntology().getName());
-        final MessageTemplate withRequestPerformative = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+        final MessageTemplate withRequestPerformative = MessageTemplate.MatchPerformative(ACLMessage.QUERY_REF);
         final MessageTemplate withProtocolName = MessageTemplate.MatchProtocol(HotelManiaAgentNames.BOOKING_OFFER);
 
         return Arrays.asList(withCodec, withOntology, withRequestPerformative, withProtocolName);
@@ -55,12 +56,22 @@ public class BookingOfferBehaviour extends EmseCyclicBehaviour {
                 final ContentElement contentElement = getAgent().getContentManager().extractContent(message);
                 final Stay stay = Stay.class.cast(contentElement);
 
+                final ACLMessage reply = getHotelManiaAgent().createReply(message);
+                reply.setProtocol(HotelManiaAgentNames.BOOKING_OFFER);
                 try {
+                    reply.setPerformative(ACLMessage.INFORM);
+
                     final Price priceFor = hotel.getPriceFor(stay);
-                    // TODO send response
+                    final BookingOffer bookingOffer = new BookingOffer();
+                    bookingOffer.setRoomPrice(priceFor);
+                    logger.info("Sending INFORM BookingOffer to agent {}", message.getSender().getName());
+                    getHotelManiaAgent().getContentManager().fillContent(reply, bookingOffer);
                 } catch (NoRoomsAvailableException e) {
-                    // TODO send refuse
+                    logger.info("No rooms available, sending REFUSE BookingOffer to agent {}", message.getSender().getName());
+                    reply.setPerformative(ACLMessage.REFUSE);
                 }
+
+                getHotelManiaAgent().sendMessage(reply);
                 return MessageStatus.PROCESSED;
             }
         });
