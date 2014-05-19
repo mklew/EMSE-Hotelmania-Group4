@@ -18,7 +18,7 @@ public class DummyPriceStrategy implements PriceStrategy {
     @Override public Price getPriceFor (Stay stay) {
         logger.info("Returning dummy Price for stay. TODO implement strategy");
         final Price price = new Price();
-        price.setPrice(50f);
+        price.setAmount(50);
         return price;
     }
 }

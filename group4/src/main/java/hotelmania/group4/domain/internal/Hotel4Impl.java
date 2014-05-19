@@ -47,6 +47,6 @@ public class Hotel4Impl implements PriceStrategy, Hotel4 {
     }
 
     private boolean agreedPriceIsHigherOrEqualToCurrentPrice (Price agreedPrice, Price currentPrice) {
-        return Float.compare(currentPrice.getPrice(), agreedPrice.getPrice()) <= 0;
+        return Float.compare(currentPrice.getAmount(), agreedPrice.getAmount()) <= 0;
     }
 }
