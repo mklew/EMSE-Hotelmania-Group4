@@ -12,7 +12,6 @@ import hotelmania.group4.guice.GuiceConfigurer;
 import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
 import hotelmania.ontology.BookRoom;
-import hotelmania.ontology.BookingOffer;
 import hotelmania.ontology.Stay;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -55,14 +54,13 @@ public class BookingBehaviour extends EmseCyclicBehaviour {
             @Override
             public MessageStatus handle (BookRoom bookRoomAction,
                                          ACLMessage message) throws Codec.CodecException, OntologyException {
-                final BookingOffer bookingOffer = bookRoomAction.getBookingOffer();
                 final Stay stay = bookRoomAction.getStay();
 
                 final ACLMessage reply = getHotelManiaAgent().createReply(message);
                 reply.setProtocol(HotelManiaAgentNames.BOOK_A_ROOM);
                 reply.setPerformative(ACLMessage.AGREE);
                 try {
-                    hotel4.bookRoomFor(stay, bookingOffer.getRoomPrice());
+                    hotel4.bookRoomFor(stay, bookRoomAction.getPrice());
                     logger.info("Booked room for stay from day {} to day {} for agent {}", stay.getCheckIn(), stay.getCheckOut(), message.getSender().getName());
                 } catch (NoRoomsAvailableException e) {
                     logger.info("Room cannot be booked because there are no rooms available. Sending REFUSE BookARoom");

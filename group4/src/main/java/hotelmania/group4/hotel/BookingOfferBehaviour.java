@@ -13,6 +13,7 @@ import hotelmania.group4.utils.MessageMatchingChain;
 import hotelmania.ontology.BookingOffer;
 import hotelmania.ontology.Price;
 import hotelmania.ontology.Stay;
+import hotelmania.ontology.StayQueryRef;
 import jade.content.ContentElement;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -54,7 +55,8 @@ public class BookingOfferBehaviour extends EmseCyclicBehaviour {
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getHotelManiaAgent()).withMessageHandler(new MessageHandler() {
             @Override public MessageStatus handle (ACLMessage message) throws OntologyException, Codec.CodecException {
                 final ContentElement contentElement = getAgent().getContentManager().extractContent(message);
-                final Stay stay = Stay.class.cast(contentElement);
+                final StayQueryRef stayQueryRef = StayQueryRef.class.cast(contentElement);
+                final Stay stay = stayQueryRef.getStay();
 
                 final ACLMessage reply = getHotelManiaAgent().createReply(message);
                 reply.setProtocol(HotelManiaAgentNames.BOOKING_OFFER);
