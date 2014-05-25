@@ -46,6 +46,8 @@ public class AgPlatform4 extends HotelManiaAgent {
 
         Utils.runAgent(this, HotelManiaAgentNames.CREATE_ACCOUNT, AgBank4.class);
 
+        Utils.runAgent(this, "ClientSpawner", ClientSpawner.class);
+
         addBehaviour(new ProbeNumberOfClients(this));
         addBehaviour(new EchoMessages(this));
     }

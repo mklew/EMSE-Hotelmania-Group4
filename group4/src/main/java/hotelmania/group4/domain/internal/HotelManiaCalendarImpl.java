@@ -13,7 +13,7 @@ public class HotelManiaCalendarImpl implements HotelManiaCalendar {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    private int dayNumber = 1;
+    private int dayNumber = 0;
 
     @Override public void dayPassed () {
         dayNumber = dayNumber + 1;

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.domain.HotelManiaCalendar;
 import hotelmania.group4.guice.GuiceConfigurer;
+import hotelmania.group4.settings.Settings;
 import hotelmania.group4.utils.EmseSubscriptionResponder;
 import hotelmania.group4.utils.Utils;
 import hotelmania.ontology.NotificationDayEvent;
@@ -33,16 +34,15 @@ import java.util.Vector;
  */
 public class AgSimulator4 extends HotelManiaAgent {
 
-    public static final int DEFAULT_TIME_FOR_DAY = 5000; // TODO read it from settings
-
-    public static final int DEFAULT_SIMULATION_LENGTH = 50; // TODO read it from settings and use to check if simulation should end
-
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private SubscriptionResponder dayEventsNotificationsSubscriptionResponder;
 
     @Inject
     HotelManiaCalendar calendar;
+
+    @Inject
+    Settings settings;
 
     private SubscriptionResponder endOfSimulationSubscriptionResponder;
 
@@ -76,14 +76,16 @@ public class AgSimulator4 extends HotelManiaAgent {
         endOfSimulationSubscriptionResponder = createEndOfSimulationSubscriptionsResponder();
         addBehaviour(endOfSimulationSubscriptionResponder);
 
-        addBehaviour(new TickerBehaviour(this, DEFAULT_TIME_FOR_DAY) {
+        addBehaviour(new TickerBehaviour(this, lengthOfTheDay()) {
             protected void onTick () {
+                logger.debug("Simulator tick");
+                calendar.dayPassed();
                 if (simulationShouldEnd()) {
                     sendEndOfSimulationMessages();
                 } else {
                     final NotificationDayEvent notificationDayEvent = new NotificationDayEvent();
                     notificationDayEvent.setDayEvent(calendar.today());
-
+                    logger.debug("Notifying about day {}", notificationDayEvent.getDayEvent().getDay());
                     final Vector subscriptions = dayEventsNotificationsSubscriptionResponder.getSubscriptions();
                     for (Object obj : subscriptions) {
                         SubscriptionResponder.Subscription subscription = (SubscriptionResponder.Subscription) obj;
@@ -99,9 +101,13 @@ public class AgSimulator4 extends HotelManiaAgent {
                         subscription.notify(reply);
                     }
                 }
-                calendar.dayPassed();
+
             }
         });
+    }
+
+    private int lengthOfTheDay () {
+        return settings.getDayLengthInSeconds() * 1000;
     }
 
     private void sendEndOfSimulationMessages () {
@@ -116,7 +122,7 @@ public class AgSimulator4 extends HotelManiaAgent {
     }
 
     private boolean simulationShouldEnd () {
-        return calendar.today().getDay() > DEFAULT_SIMULATION_LENGTH;
+        return calendar.today().getDay() > settings.getSimulationDays();
     }
 
     private EmseSubscriptionResponder createDayEventsNotificationsSubscriptionsResponder () {
