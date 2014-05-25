@@ -1,14 +1,14 @@
 package hotelmania.group4.hotel;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
+import hotelmania.group4.platform.OnDayEvent;
 import hotelmania.group4.utils.ProcessDescriptionFn;
 import hotelmania.group4.utils.SearchForAgent;
+import hotelmania.group4.utils.SubscribeToDayEvents;
 import hotelmania.group4.utils.Utils;
 import hotelmania.ontology.*;
-import jade.content.ContentElement;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
@@ -20,8 +20,6 @@ import jade.lang.acl.ACLMessage;
 import jade.proto.SubscriptionInitiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
@@ -85,44 +83,13 @@ public class AgHotel4 extends HotelManiaAgent {
             }
         }));
 
-        // adding the SubscribeToDayEvent behaviour for interacting with Simulator
-        //addBehaviour(SubscribeToDayEvent());
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.SUBSCRIBE_TO_DAY_EVENT, this, new Function<DFAgentDescription[], Object>() {
-            @Override public Object apply (DFAgentDescription[] dfAgentDescriptions) {
-
-                if (dfAgentDescriptions.length > 1) {
-                    logger.error("More than 1 simulator found");
-                } else {
-                    final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
-                    final AID simulator = dfAgentDescription.getName();
-
-                    ACLMessage msg = createMessage(simulator, ACLMessage.SUBSCRIBE);
-                    msg.setProtocol(SUBSCRIBE_TO_DAY_EVENT);
-                    // We want to receive a reply in 10 secs
-                    msg.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
-                    msg.setContent("SubscribeToDayEvent");
-
-                    dayEventsNotificationSubscriptionInitiator = new SubscriptionInitiator(AgHotel4.this, msg) {
-                        @Override protected void handleInform (ACLMessage inform) {
-                            super.handleInform(inform);    //To change body of overridden methods use File | Settings | File Templates.
-                            ContentElement content = null;
-                            try {
-                                content = getAgent().getContentManager().extractContent(inform);
-                            } catch (Codec.CodecException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            } catch (OntologyException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            }
-                            NotificationDayEvent notificationDayEvent = (NotificationDayEvent) content;
-                            day = notificationDayEvent.getDayEvent().getDay();
-                            logger.info("Received new day event notification. Day {}", day);
-                        }
-                    };
-                    addBehaviour(dayEventsNotificationSubscriptionInitiator);
-                }
-                return null;
+        final SubscribeToDayEvents subscribeToDayEvents = new SubscribeToDayEvents(this, new OnDayEvent() {
+            @Override public void onDayEvent (NotificationDayEvent notificationDayEvent) {
+                day = notificationDayEvent.getDayEvent().getDay();
+                logger.info("Received new day event notification. Day {}", day);
             }
-        }));
+        });
+        subscribeToDayEvents.doSubscription();
 
         // adding the SingContract behaviour for interacting with agency
         addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGN_CONTRACT, this, new ProcessDescriptionFn<Object>() {
