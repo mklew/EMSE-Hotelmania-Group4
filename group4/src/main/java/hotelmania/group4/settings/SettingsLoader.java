@@ -33,7 +33,7 @@ public class SettingsLoader implements Settings {
         return Integer.parseInt(properties.getProperty("simulation.clients_per_day"));
     }
 
-    @Override public int getTimeToStart () {
+    @Override public int getTimeToStartSimulation () {
         return Integer.parseInt(properties.getProperty("simulation.time_to_start"));
     }
 

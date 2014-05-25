@@ -12,6 +12,7 @@ import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.core.AID;
 import jade.core.behaviours.TickerBehaviour;
+import jade.core.behaviours.WakerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.FailureException;
@@ -76,6 +77,20 @@ public class AgSimulator4 extends HotelManiaAgent {
         endOfSimulationSubscriptionResponder = createEndOfSimulationSubscriptionsResponder();
         addBehaviour(endOfSimulationSubscriptionResponder);
 
+        addBehaviour(new WakerBehaviour(this, getTimeToStartSimulation()) {
+            @Override protected void onWake () {
+                logger.info("Starting simulation...");
+                addDayTickerBehaviour();
+            }
+        });
+
+    }
+
+    private long getTimeToStartSimulation () {
+        return (settings.getTimeToStartSimulation() - settings.getDayLengthInSeconds()) * 1000;
+    }
+
+    private void addDayTickerBehaviour () {
         addBehaviour(new TickerBehaviour(this, lengthOfTheDay()) {
             protected void onTick () {
                 logger.debug("Simulator tick");

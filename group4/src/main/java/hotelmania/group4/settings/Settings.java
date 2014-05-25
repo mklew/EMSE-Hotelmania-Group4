@@ -15,7 +15,7 @@ public interface Settings {
 
     int getNumberOfNewClientsPerDay();
 
-    int getTimeToStart();
+    int getTimeToStartSimulation ();
 
     int getDayLengthInSeconds();
 }

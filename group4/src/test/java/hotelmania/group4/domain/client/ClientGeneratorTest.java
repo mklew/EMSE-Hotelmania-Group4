@@ -34,7 +34,7 @@ public class ClientGeneratorTest {
                 return 10;
             }
 
-            @Override public int getTimeToStart () {
+            @Override public int getTimeToStartSimulation () {
                 return 0;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
