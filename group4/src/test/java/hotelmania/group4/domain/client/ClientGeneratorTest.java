@@ -33,6 +33,14 @@ public class ClientGeneratorTest {
             @Override public int getNumberOfNewClientsPerDay () {
                 return 10;
             }
+
+            @Override public int getTimeToStart () {
+                return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override public int getDayLengthInSeconds () {
+                return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            }
         });
         final Random random = new Random();
         final int currentDay = random.nextInt(SIMULATION_DAYS);

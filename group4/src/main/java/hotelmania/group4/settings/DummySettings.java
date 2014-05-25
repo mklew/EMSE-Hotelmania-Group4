@@ -21,4 +21,12 @@ public class DummySettings implements Settings {
     @Override public int getNumberOfNewClientsPerDay () {
         return 10;
     }
+
+    @Override public int getTimeToStart () {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override public int getDayLengthInSeconds () {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
