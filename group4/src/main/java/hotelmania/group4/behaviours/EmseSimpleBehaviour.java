@@ -34,6 +34,13 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
 
     @Override
     public void action () {
+        try {
+            doAction();
+        } catch (Codec.CodecException e) {
+            throw new RuntimeException(e);
+        } catch (OntologyException e) {
+            throw new RuntimeException(e);
+        }
         final List<MessageTemplate> messageTemplates = getMessageTemplates();
         ACLMessage receive;
         if(messageTemplates.isEmpty()) {
@@ -64,6 +71,10 @@ public abstract class EmseSimpleBehaviour extends SimpleBehaviour {
     protected abstract List<MessageTemplate> getMessageTemplates ();
 
     protected abstract MessageStatus processMessage (ACLMessage message) throws Codec.CodecException, OntologyException;
+
+    protected void doAction() throws Codec.CodecException, OntologyException {
+
+    }
 
     protected HotelManiaAgent getHotelManiaAgent () {
         return agent;

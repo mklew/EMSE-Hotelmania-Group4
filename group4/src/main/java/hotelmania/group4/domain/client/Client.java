@@ -1,5 +1,7 @@
 package hotelmania.group4.domain.client;
 
+import hotelmania.ontology.Stay;
+
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
  * @since 18/05/14
@@ -28,5 +30,16 @@ public class Client {
 
     public int getCheckOutDay () {
         return checkOutDay;
+    }
+
+    public boolean hasToBookToday (int day) {
+        return checkInDay == day + 1;
+    }
+
+    public Stay getStay () {
+        final Stay stay = new Stay();
+        stay.setCheckIn(checkInDay);
+        stay.setCheckOut(checkOutDay);
+        return stay;
     }
 }

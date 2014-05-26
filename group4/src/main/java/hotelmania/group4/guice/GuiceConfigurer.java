@@ -3,6 +3,7 @@ package hotelmania.group4.guice;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import hotelmania.group4.domain.HotelManiaModule;
+import hotelmania.group4.jobs.WorkersModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public class GuiceConfigurer {
 
     static {
         logger.debug("Getting container up");
-        injector = new AtomicReference<Injector>(Guice.createInjector(new HotelManiaModule()));
+        injector = new AtomicReference<Injector>(Guice.createInjector(new HotelManiaModule(), new WorkersModule()));
     }
 
     public static Injector getInjector () {
