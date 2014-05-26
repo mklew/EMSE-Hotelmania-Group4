@@ -60,9 +60,11 @@ public class InMemoryBankAccountRepository implements BankAccountRepository {
         return id;
     }
 
-    public synchronized Account retrieveBalance (int accountId) throws AccountDoesNotExistException {
+    public synchronized Account retrieveAccount (int accountId) throws AccountDoesNotExistException {
         Account account = accounts.get(accountId);
-
+        if(account == null) {
+            throw new AccountDoesNotExistException();
+        }
         return account;
     }
 

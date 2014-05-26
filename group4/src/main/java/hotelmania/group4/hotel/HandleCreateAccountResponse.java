@@ -4,6 +4,7 @@ import hotelmania.group4.behaviours.EmseSimpleBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
+import hotelmania.ontology.AccountStatus;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.core.AID;
@@ -37,31 +38,24 @@ class HandleCreateAccountResponse extends EmseSimpleBehaviour {
         return Arrays.asList(MessageTemplate.MatchSender(bank));
     }
 
-    @Override protected MessageStatus processMessage (ACLMessage message) throws Codec.CodecException, OntologyException {
+    @Override
+    protected MessageStatus processMessage (ACLMessage message) throws Codec.CodecException, OntologyException {
         final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getAgent()).withMessageHandler(new MessageHandler() {
-            @Override public MessageStatus handle (ACLMessage message) {
+            @Override public MessageStatus handle (ACLMessage message) throws OntologyException, Codec.CodecException {
                 if (message.getPerformative() == ACLMessage.INFORM) {
-
-                    agHotel4.setAccountId(Integer.valueOf(message.getContent()));
-
-                    logger.info("Received INFORM for successful CreateAccount");
+                    final AccountStatus accountStatus = AccountStatus.class.cast(getHotelManiaAgent().getContentManager().extractContent(message));
+                    final int accountId = accountStatus.getAccount().getId_account();
+                    logger.info("Received INFORM for successful CreateAccount. Account ID is {}", accountId);
+                    agHotel4.setAccountId(accountId);
                     gotResponse = true;
                     return MessageStatus.PROCESSED;
                 } else if (message.getPerformative() == ACLMessage.FAILURE) {
                     logger.info("Received FAILURE as CreateAccount response");
                     gotResponse = true;
                     return MessageStatus.PROCESSED;
-                } else if (message.getPerformative() == ACLMessage.NOT_UNDERSTOOD) {
-                    logger.info("Received not understood as CreateAccount response");
-                    gotResponse = true;
-                    return MessageStatus.PROCESSED;
-                } else {
-                    gotResponse = false;
-                    final ACLMessage reply = getHotelManiaAgent().createReply(message);
-                    reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-                    logger.info("Received unexpected message with performative with code {}. Replying with NOT_UNDERSTOOD", message.getPerformative());
-                    sendMessage(reply);
-                    return MessageStatus.PROCESSED;
+                }
+                else {
+                    return MessageStatus.NOT_PROCESSED;
                 }
             }
         });

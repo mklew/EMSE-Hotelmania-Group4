@@ -10,7 +10,7 @@ import hotelmania.ontology.Hotel;
 public interface BankAccountRepository {
     Account createAccount (Hotel hotel) throws AccountAlreadyExistsException;
 
-    Account retrieveBalance (int account_ID) throws AccountDoesNotExistException;
+    Account retrieveAccount (int account_ID) throws AccountDoesNotExistException;
 
     void chargeHotel (Hotel hotel, float contractValue);
 }

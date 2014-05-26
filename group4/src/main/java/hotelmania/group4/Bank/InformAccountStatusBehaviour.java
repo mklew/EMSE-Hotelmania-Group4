@@ -10,10 +10,10 @@ import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
 import hotelmania.ontology.Account;
+import hotelmania.ontology.AccountStatus;
 import hotelmania.ontology.AccountStatusQueryRef;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
-import jade.content.onto.basic.Action;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.slf4j.Logger;
@@ -57,10 +57,11 @@ public class InformAccountStatusBehaviour extends EmseCyclicBehaviour {
 
                 final int accountId = action.getId_account();
                 try {
-                    Account currentAccount = bankAccountRepository.retrieveBalance(accountId);
+                    Account currentAccount = bankAccountRepository.retrieveAccount(accountId);
                     reply.setPerformative(ACLMessage.INFORM);
-                    Action agentAction = new Action(message.getSender(), currentAccount);
-                    getAgent().getContentManager().fillContent(reply, agentAction);
+                    final AccountStatus accountStatus = new AccountStatus();
+                    accountStatus.setAccount(currentAccount);
+                    getAgent().getContentManager().fillContent(reply, accountStatus);
                     getHotelManiaAgent().sendMessage(reply);
                     logger.info("Informed hotel with the current Balance");
                 } catch (AccountDoesNotExistException e) {
