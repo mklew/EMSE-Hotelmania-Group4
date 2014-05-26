@@ -9,7 +9,7 @@ import hotelmania.ontology.Contract;
 public class ContractValueCalculator {
 
     public static float calculateContractValue(Contract contract) {
-        // TODO implement this
+        // TODO implement this Alberth
         return 50;
     }
 }
