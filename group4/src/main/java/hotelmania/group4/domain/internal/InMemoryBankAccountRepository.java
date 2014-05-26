@@ -1,5 +1,7 @@
 package hotelmania.group4.domain.internal;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import hotelmania.group4.domain.AccountAlreadyExistsException;
 import hotelmania.group4.domain.BankAccountRepository;
 import hotelmania.ontology.Account;
@@ -7,9 +9,9 @@ import hotelmania.ontology.Hotel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Tahir on 09/05/2014.
@@ -17,47 +19,70 @@ import java.util.Set;
 public class InMemoryBankAccountRepository implements BankAccountRepository {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private Hashtable accounts = new Hashtable();
-    @Override
-    public synchronized Account createAccount(final Hotel hotel) throws AccountAlreadyExistsException {
-        if (accounts.containsKey(hotel.getHotel_name()))
-        {
-            logger.debug("Account with title {} has already been Created", hotel.getHotel_name());
-            throw new AccountAlreadyExistsException();
-        }
-        else
-        {
-            if (accounts.isEmpty())
-            {
-                int balance = 100;
-                Account newAccount = new Account();
-                newAccount.setBalance(balance);
-                newAccount.setHotel(hotel);
-                newAccount.setId_account(1001);
-                accounts.put(1001, newAccount);
-                logger.info("Created Account with ID 1001 in Bank4");
-                return newAccount;
-            }
-            else
-            {
-                int balance = 100;
-                int key = 1000 + accounts.size();
-                Account newAccount = new Account();
-                newAccount.setBalance(balance);
-                newAccount.setHotel(hotel);
-                newAccount.setId_account(key);
+    private Map<Integer, Account> accounts = new HashMap<>();
 
-                accounts.put(key, newAccount);
-                logger.info("Created Account with ID {} in Bank4", key);
-                return newAccount;
-            }
+    private int accountId = 100;
+
+    @Override
+    public synchronized Account createAccount (final Hotel hotel) throws AccountAlreadyExistsException {
+
+        int newId = getNextAccountId();
+
+        if (containsAccount(hotel)) {
+            logger.debug("Account for hotel with name '{}' already exists", hotel.getHotel_name());
+            throw new AccountAlreadyExistsException();
+        } else {
+            Account newAccount = new Account();
+            newAccount.setBalance(0);
+            newAccount.setHotel(hotel);
+            newAccount.setId_account(newId);
+            accounts.put(newId, newAccount);
+            logger.info("Created Account with ID {} in Bank4 for hotel '{}'", newId, hotel.getHotel_name());
+            return newAccount;
         }
     }
 
-    public synchronized Account retrieveBalance (int account_ID) throws AccountDoesNotExistException
-    {
-        Account account = (Account)accounts.get(account_ID);
+    private boolean containsAccount (final Hotel hotel) {
+        return findAccounts(hotel).size() > 0;
+    }
+
+    private Collection<Account> findAccounts (final Hotel hotel) {
+        return Collections2.filter(accounts.values(), new Predicate<Account>() {
+            @Override public boolean apply (Account account) {
+                return account.getHotel().getHotel_name().equals(hotel.getHotel_name());
+            }
+        });
+    }
+
+    private int getNextAccountId () {
+        final int id = accountId;
+        accountId = accountId + 1;
+        return id;
+    }
+
+    public synchronized Account retrieveBalance (int accountId) throws AccountDoesNotExistException {
+        Account account = accounts.get(accountId);
 
         return account;
+    }
+
+    @Override public void chargeHotel (Hotel hotel, float contractValue) {
+        try {
+            Account acc = getAccount(hotel);
+            final float balance = acc.getBalance();
+            final float newBalance = balance - contractValue;
+            acc.setBalance(newBalance);
+        } catch (AccountDoesNotExistException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Account getAccount (Hotel hotel) throws AccountDoesNotExistException {
+        final Collection<Account> accounts = findAccounts(hotel);
+        if (accounts.size() == 0) {
+            throw new AccountDoesNotExistException();
+        } else {
+            return accounts.iterator().next();
+        }
     }
 }

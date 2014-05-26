@@ -51,7 +51,7 @@ public class QueryInformationBehaviour extends EmseCyclicBehaviour {
         reply.setProtocol(HotelManiaAgentNames.QUERY_HOTELMANIA_INFORMATION);
         ContentElementList listOfHotels = new ContentElementList();
 
-        final Set<HotelInformation> hotelInformations = hotelRepositoryService.getHotelInformations();
+        final Set<HotelInformation> hotelInformations = hotelRepositoryService.getHotelInformation();
         for (HotelInformation hotelInformation : hotelInformations) {
             listOfHotels.add(hotelInformation);
         }

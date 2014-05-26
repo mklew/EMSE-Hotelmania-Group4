@@ -55,9 +55,9 @@ public class InformAccountStatusBehaviour extends EmseCyclicBehaviour {
             @Override public MessageStatus handle (AccountStatusQueryRef action,
                                                    ACLMessage message) throws Codec.CodecException, OntologyException {
 
-                final int account_ID = action.getId_account();
+                final int accountId = action.getId_account();
                 try {
-                    Account currentAccount = bankAccountRepository.retrieveBalance(account_ID);
+                    Account currentAccount = bankAccountRepository.retrieveBalance(accountId);
                     reply.setPerformative(ACLMessage.INFORM);
                     Action agentAction = new Action(message.getSender(), currentAccount);
                     getAgent().getContentManager().fillContent(reply, agentAction);

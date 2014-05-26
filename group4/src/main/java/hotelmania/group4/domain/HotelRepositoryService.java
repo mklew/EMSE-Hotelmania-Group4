@@ -1,6 +1,7 @@
 package hotelmania.group4.domain;
 
 
+import hotelmania.group4.domain.internal.HotelHasNotBeenRegistered;
 import hotelmania.ontology.Hotel;
 import hotelmania.ontology.HotelInformation;
 
@@ -16,5 +17,7 @@ public interface HotelRepositoryService {
 
     Set<Hotel> getHotels ();
 
-    Set<HotelInformation> getHotelInformations ();
+    Set<HotelInformation> getHotelInformation ();
+
+    HotelData getHotel (Hotel hotel) throws HotelHasNotBeenRegistered;
 }
