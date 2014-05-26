@@ -3,13 +3,13 @@ package hotelmania.group4.platform;
 import com.google.inject.Inject;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
+import hotelmania.group4.domain.HotelManiaCalendar;
 import hotelmania.group4.domain.HotelRepositoryService;
 import hotelmania.group4.guice.GuiceConfigurer;
 import hotelmania.ontology.Hotel;
 import hotelmania.ontology.NumberOfClientsQueryRef;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
-import jade.content.onto.basic.Action;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import org.slf4j.Logger;
@@ -30,6 +30,9 @@ public class ProbeNumberOfClients extends TickerBehaviour {
     @Inject
     HotelRepositoryService hotelRepositoryService;
 
+    @Inject
+    HotelManiaCalendar calendar;
+
     public ProbeNumberOfClients (HotelManiaAgent agent) {
         super(agent, 30000);
         this.agent = agent;
@@ -45,10 +48,10 @@ public class ProbeNumberOfClients extends TickerBehaviour {
             aclMessage.setProtocol(HotelManiaAgentNames.NUMBER_OF_CLIENTS);
 
             NumberOfClientsQueryRef numberOfClientsQueryRef = new NumberOfClientsQueryRef();
+            numberOfClientsQueryRef.setDay(calendar.today().getDay());
 
-            Action agAction = new Action(hotel.getHotelAgent(), numberOfClientsQueryRef);
             try {
-                agent.getContentManager().fillContent(aclMessage, agAction);
+                agent.getContentManager().fillContent(aclMessage, numberOfClientsQueryRef);
             } catch (Codec.CodecException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (OntologyException e) {

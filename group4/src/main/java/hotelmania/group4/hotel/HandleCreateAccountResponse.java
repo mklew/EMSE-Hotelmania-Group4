@@ -20,6 +20,9 @@ import java.util.List;
  * Created by Tahir on 09/05/2014.
  */
 class HandleCreateAccountResponse extends EmseSimpleBehaviour {
+
+    private final AgHotel4.OnDone onDone;
+
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private final AID bank;
@@ -28,10 +31,11 @@ class HandleCreateAccountResponse extends EmseSimpleBehaviour {
 
     private AgHotel4 agHotel4;
 
-    public HandleCreateAccountResponse (AgHotel4 agHotel4, AID aid) {
+    public HandleCreateAccountResponse (AgHotel4 agHotel4, AID aid, AgHotel4.OnDone onDone) {
         super(agHotel4);
         this.agHotel4 = agHotel4;
         this.bank = aid;
+        this.onDone = onDone;
     }
 
     @Override protected List<MessageTemplate> getMessageTemplates () {
@@ -48,13 +52,14 @@ class HandleCreateAccountResponse extends EmseSimpleBehaviour {
                     logger.info("Received INFORM for successful CreateAccount. Account ID is {}", accountId);
                     agHotel4.setAccountId(accountId);
                     gotResponse = true;
+                    onDone.done();
                     return MessageStatus.PROCESSED;
                 } else if (message.getPerformative() == ACLMessage.FAILURE) {
                     logger.info("Received FAILURE as CreateAccount response");
                     gotResponse = true;
+                    onDone.failed();
                     return MessageStatus.PROCESSED;
-                }
-                else {
+                } else {
                     return MessageStatus.NOT_PROCESSED;
                 }
             }

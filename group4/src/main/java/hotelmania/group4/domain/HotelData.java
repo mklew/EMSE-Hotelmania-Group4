@@ -5,6 +5,7 @@ import hotelmania.ontology.Contract;
 import hotelmania.ontology.Hotel;
 import hotelmania.ontology.HotelInformation;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Map;
 public class HotelData {
     private final HotelInformation hotelInformation;
 
-    private Map<Integer, Contract> dayToSignedContract;
+    private Map<Integer, Contract> dayToSignedContract = new HashMap<>();
 
     public HotelInformation getHotelInformation () {
         return hotelInformation;

@@ -7,8 +7,8 @@ import hotelmania.group4.behaviours.EmseCyclicBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.domain.Hotel4;
 import hotelmania.group4.guice.GuiceConfigurer;
-import hotelmania.group4.utils.ActionMessageHandler;
 import hotelmania.group4.utils.MessageMatchingChain;
+import hotelmania.group4.utils.PredicateHandler;
 import hotelmania.ontology.NumberOfClients;
 import hotelmania.ontology.NumberOfClientsQueryRef;
 import jade.content.lang.Codec;
@@ -49,11 +49,9 @@ public class RespondToNumberOfClients extends EmseCyclicBehaviour {
     protected MessageStatus processMessage (ACLMessage message) throws Codec.CodecException, OntologyException {
 
 
-        final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getHotelManiaAgent()).withActionMatcher(NumberOfClientsQueryRef.class, new ActionMessageHandler<NumberOfClientsQueryRef>() {
-            @Override public MessageStatus handle (NumberOfClientsQueryRef action,
+        final MessageMatchingChain messageMatchingChain = new MessageMatchingChain(getHotelManiaAgent()).withPredicateMatcher(NumberOfClientsQueryRef.class, new PredicateHandler<NumberOfClientsQueryRef>() {
+            @Override public MessageStatus handle (NumberOfClientsQueryRef numberOfClientsQueryRef,
                                                    ACLMessage message) throws Codec.CodecException, OntologyException {
-
-                final NumberOfClientsQueryRef numberOfClientsQueryRef = NumberOfClientsQueryRef.class.cast(getAgent().getContentManager().extractContent(message));
 
                 final ACLMessage reply = getHotelManiaAgent().createReply(message);
                 reply.setPerformative(ACLMessage.INFORM);

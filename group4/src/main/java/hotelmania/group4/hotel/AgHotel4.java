@@ -29,6 +29,12 @@ import org.slf4j.LoggerFactory;
  */
 public class AgHotel4 extends HotelManiaAgent {
 
+    public interface OnDone {
+        void done();
+
+        void failed();
+    }
+
     public static final String HOTEL_NAME = "Hotel4";
 
     private int accountId;
@@ -42,56 +48,102 @@ public class AgHotel4 extends HotelManiaAgent {
     @Override
     protected void setupHotelManiaAgent () {
         System.out.println(getLocalName() + ": HAS ENTERED");
-
         logger.debug("setting up agent");
 
+        registerInYellowPages();
+        registerInHotelmania();
+        subscribeToDayEvents();
+
+        // adding a behaviour for searching the bank
+        createBankAccount(new OnDone() {
+            @Override public void done () {
+                signContractWithAgency(); // TODO contract needs to be calculated
+
+                checkAccountStatus(); // adding behaviour for checking Account Status
+            }
+
+            @Override public void failed () {
+
+            }
+        });
+
+        addBehaviour(new RespondToNumberOfClients(this));
+        addBehaviour(new BookingOfferBehaviour(this));
+        addBehaviour(new BookingBehaviour(this));
+    }
+
+    private void registerInYellowPages () {
         try {
-            // Creates its own description
-            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), QUERY_NUMBER_OF_CLIENTS);
-            // Registers its description in the DF
-            DFService.register(this, dfd);
+            DFAgentDescription dfd = Utils.createAgentDescriptionWithNameAndType(this.getName(), QUERY_NUMBER_OF_CLIENTS); // Creates its own description
+            DFService.register(this, dfd); // Registers its description in the DF
             logger.info(getLocalName() + ": registered in the DF");
         } catch (FIPAException e) {
             e.printStackTrace();
         }
+    }
 
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.REGISTRATION, this, new ProcessDescriptionFn<Object>() {
+    private void checkAccountStatus () {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.ACCOUNT_STATUS, this, new ProcessDescriptionFn<Object>() {
             @Override public <T> Optional<T> found (
                     DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
                 if (dfAgentDescriptions.length > 1) {
-                    logger.error("More than 1 hotel mania agents found");
+                    logger.error("More than 1 Banks found");
                 } else {
                     final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
-                    final AID hotelmania = dfAgentDescription.getName();
+                    final AID bank = dfAgentDescription.getName();
 
-                    ACLMessage msg = createMessage(hotelmania, ACLMessage.REQUEST);
-                    msg.setProtocol(REGISTRATION);
-                    RegistrationRequest registrationRequest = new RegistrationRequest();
-                    final Hotel hotel = new Hotel();
-                    hotel.setHotel_name(HOTEL_NAME);
-                    hotel.setHotelAgent(getAID());
-                    registrationRequest.setHotel(hotel);
+                    ACLMessage newMessage = createMessage(bank, ACLMessage.REQUEST);
+                    newMessage.setProtocol(ACCOUNT_STATUS);
+
+                    // Creating a new AccountStatusQueryRef
+                    AccountStatusQueryRef account = new AccountStatusQueryRef();
+                    account.setId_account(accountId);
 
                     // As it is an action and the encoding language the SL, it must be wrapped
                     // into an Action
-                    Action agAction = new Action(hotelmania, registrationRequest);
-                    getContentManager().fillContent(msg, agAction);
-                    addBehaviour(new HandleRegistrationRequestResponse(AgHotel4.this, hotelmania));
-                    sendMessage(msg);
+                    Action agentAction = new Action(bank, account);
+                    getContentManager().fillContent(newMessage, agentAction);
+                    addBehaviour(new HandleAccountStatusResponse(AgHotel4.this, bank));
+                    sendMessage(newMessage);
                 }
                 return Optional.absent();
             }
         }));
+    }
 
-        final SubscribeToDayEvents subscribeToDayEvents = new SubscribeToDayEvents(this, new OnDayEvent() {
-            @Override public void onDayEvent (NotificationDayEvent notificationDayEvent) {
-                day = notificationDayEvent.getDayEvent().getDay();
-                logger.info("Received new day event notification. Day {}", day);
+    private void createBankAccount (final OnDone onDone) {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.CREATE_ACCOUNT, this, new ProcessDescriptionFn<Object>() {
+            @Override public <T> Optional<T> found (
+                    DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
+                if (dfAgentDescriptions.length > 1) {
+                    logger.error("More than 1 banks found");
+                } else {
+                    final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
+                    final AID bank = dfAgentDescription.getName();
+
+                    ACLMessage newMessage = createMessage(bank, ACLMessage.REQUEST);
+                    newMessage.setProtocol(CREATE_ACCOUNT);
+
+                    CreateAccountRequest accountRequest = new CreateAccountRequest();
+                    // making the account request and setting random the name of the hotel
+                    Hotel hotel = new Hotel();
+                    hotel.setHotel_name("Hotel4");
+                    accountRequest.setHotel(hotel);
+
+
+                    // As it is an action and the encoding language the SL, it must be wrapped
+                    // into an Action
+                    Action agentAction = new Action(bank, accountRequest);
+                    getContentManager().fillContent(newMessage, agentAction);
+                    addBehaviour(new HandleCreateAccountResponse(AgHotel4.this, bank, onDone));
+                    sendMessage(newMessage);
+                }
+                return Optional.absent();
             }
-        });
-        subscribeToDayEvents.doSubscription();
+        }));
+    }
 
-        // adding the SingContract behaviour for interacting with agency
+    private void signContractWithAgency () {
         addBehaviour(new SearchForAgent(HotelManiaAgentNames.SIGN_CONTRACT, this, new ProcessDescriptionFn<Object>() {
             @Override public <T> Optional<T> found (
                     DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
@@ -132,74 +184,46 @@ public class AgHotel4 extends HotelManiaAgent {
                 return Optional.absent();
             }
         }));
+    }
 
+    private void subscribeToDayEvents () {
+        final SubscribeToDayEvents subscribeToDayEvents = new SubscribeToDayEvents(this, new OnDayEvent() {
+            @Override public void onDayEvent (NotificationDayEvent notificationDayEvent) {
+                day = notificationDayEvent.getDayEvent().getDay();
+                logger.info("Received new day event notification. Day {}", day);
+            }
+        });
+        subscribeToDayEvents.doSubscription();
+    }
 
-        // adding a behaviour for searching the bank
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.CREATE_ACCOUNT, this, new ProcessDescriptionFn<Object>() {
+    private void registerInHotelmania () {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.REGISTRATION, this, new ProcessDescriptionFn<Object>() {
             @Override public <T> Optional<T> found (
                     DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
                 if (dfAgentDescriptions.length > 1) {
-                    logger.error("More than 1 banks found");
+                    logger.error("More than 1 hotel mania agents found");
                 } else {
                     final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
-                    final AID bank = dfAgentDescription.getName();
+                    final AID hotelmania = dfAgentDescription.getName();
 
-                    ACLMessage newMessage = createMessage(bank, ACLMessage.REQUEST);
-                    newMessage.setProtocol(CREATE_ACCOUNT);
-
-                    CreateAccountRequest accountRequest = new CreateAccountRequest();
-                    // making the account request and setting random the name of the hotel
-                    Hotel hotel = new Hotel();
-                    hotel.setHotel_name("Hotel4");
-                    accountRequest.setHotel(hotel);
-
+                    ACLMessage msg = createMessage(hotelmania, ACLMessage.REQUEST);
+                    msg.setProtocol(REGISTRATION);
+                    RegistrationRequest registrationRequest = new RegistrationRequest();
+                    final Hotel hotel = new Hotel();
+                    hotel.setHotel_name(HOTEL_NAME);
+                    hotel.setHotelAgent(getAID());
+                    registrationRequest.setHotel(hotel);
 
                     // As it is an action and the encoding language the SL, it must be wrapped
                     // into an Action
-                    Action agentAction = new Action(bank, accountRequest);
-                    getContentManager().fillContent(newMessage, agentAction);
-                    addBehaviour(new HandleCreateAccountResponse(AgHotel4.this, bank));
-                    sendMessage(newMessage);
+                    Action agAction = new Action(hotelmania, registrationRequest);
+                    getContentManager().fillContent(msg, agAction);
+                    addBehaviour(new HandleRegistrationRequestResponse(AgHotel4.this, hotelmania));
+                    sendMessage(msg);
                 }
                 return Optional.absent();
             }
         }));
-
-
-        // adding behaviour for checking Account Status
-        addBehaviour(new SearchForAgent(HotelManiaAgentNames.ACCOUNT_STATUS, this, new ProcessDescriptionFn<Object>() {
-            @Override public <T> Optional<T> found (
-                    DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
-                if (dfAgentDescriptions.length > 1) {
-                    logger.error("More than 1 Banks found");
-                } else {
-                    final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
-                    final AID bank = dfAgentDescription.getName();
-
-                    ACLMessage newMessage = createMessage(bank, ACLMessage.REQUEST);
-                    newMessage.setProtocol(ACCOUNT_STATUS);
-
-                    // Creating a new AccountStatusQueryRef
-                    AccountStatusQueryRef account = new AccountStatusQueryRef();
-                    account.setId_account(accountId);
-
-                    // As it is an action and the encoding language the SL, it must be wrapped
-                    // into an Action
-                    Action agentAction = new Action(bank, account);
-                    getContentManager().fillContent(newMessage, agentAction);
-                    addBehaviour(new HandleAccountStatusResponse(AgHotel4.this, bank));
-                    sendMessage(newMessage);
-                }
-                return Optional.absent();
-            }
-        }));
-
-
-        addBehaviour(new RespondToNumberOfClients(this));
-        addBehaviour(new BookingOfferBehaviour(this));
-        addBehaviour(new BookingBehaviour(this));
-
-
     }
 
     public void setAccountId (Integer accountId) {
