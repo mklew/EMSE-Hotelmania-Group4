@@ -7,8 +7,8 @@ import hotelmania.group4.behaviours.EmseCyclicBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
 import hotelmania.group4.domain.Hotel4;
 import hotelmania.group4.guice.GuiceConfigurer;
-import hotelmania.group4.utils.MessageMatchingChain;
-import hotelmania.group4.utils.PredicateHandler;
+import hotelmania.group4.utils.matchers.MessageMatchingChain;
+import hotelmania.group4.utils.matchers.PredicateHandler;
 import hotelmania.ontology.NumberOfClients;
 import hotelmania.ontology.NumberOfClientsQueryRef;
 import jade.content.lang.Codec;
@@ -57,9 +57,7 @@ public class RespondToNumberOfClients extends EmseCyclicBehaviour {
                 reply.setPerformative(ACLMessage.INFORM);
                 reply.setProtocol(HotelManiaAgentNames.NUMBER_OF_CLIENTS);
 
-                final NumberOfClients numberOfClients = new NumberOfClients();
-
-                numberOfClients.setNum_clients(hotel4.getNumberOfClientsAtDay(numberOfClientsQueryRef.getDay()));
+                final NumberOfClients numberOfClients = getNumberOfClientsForGivenDay(numberOfClientsQueryRef);
 
                 getHotelManiaAgent().getContentManager().fillContent(reply, numberOfClients);
                 getHotelManiaAgent().sendMessage(reply);
@@ -68,5 +66,11 @@ public class RespondToNumberOfClients extends EmseCyclicBehaviour {
         });
 
         return messageMatchingChain.handleMessage(message);
+    }
+
+    private NumberOfClients getNumberOfClientsForGivenDay (NumberOfClientsQueryRef numberOfClientsQueryRef) {
+        final NumberOfClients numberOfClients = new NumberOfClients();
+        numberOfClients.setNum_clients(hotel4.getNumberOfClientsAtDay(numberOfClientsQueryRef.getDay()));
+        return numberOfClients;
     }
 }

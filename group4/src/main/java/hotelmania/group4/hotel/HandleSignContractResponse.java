@@ -2,8 +2,8 @@ package hotelmania.group4.hotel;
 
 import hotelmania.group4.behaviours.EmseSimpleBehaviour;
 import hotelmania.group4.behaviours.MessageStatus;
-import hotelmania.group4.utils.MessageHandler;
-import hotelmania.group4.utils.MessageMatchingChain;
+import hotelmania.group4.utils.matchers.MessageHandler;
+import hotelmania.group4.utils.matchers.MessageMatchingChain;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.core.AID;

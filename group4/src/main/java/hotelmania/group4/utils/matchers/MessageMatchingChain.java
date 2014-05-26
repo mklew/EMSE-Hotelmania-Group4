@@ -1,4 +1,4 @@
-package hotelmania.group4.utils;
+package hotelmania.group4.utils.matchers;
 
 
 import com.google.common.base.Optional;
