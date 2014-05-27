@@ -44,7 +44,7 @@ public class ClientAgent extends HotelManiaAgent {
 
     boolean isStayingInHotel = false;
 
-    boolean bookedRoom = false;
+    volatile boolean bookedRoom = false;
 
     private Map<HotelInformation, Price> hotelToPrice = new HashMap<>();
 
@@ -120,6 +120,7 @@ public class ClientAgent extends HotelManiaAgent {
                         bookRoom.setStay(client.getStay());
                         final DoBookRoom doBookRoom = new DoBookRoom(ClientAgent.this, next.getHotelInformation().getHotel().getHotelAgent(), bookRoom, new DoBookRoom.BookResult() {
                             @Override public void success () {
+                                logger.info("{} booked room", getName());
                                 bookedRoom = true;
                             }
 
