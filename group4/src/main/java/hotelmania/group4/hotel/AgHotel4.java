@@ -3,6 +3,7 @@ package hotelmania.group4.hotel;
 import com.google.common.base.Optional;
 import hotelmania.group4.HotelManiaAgent;
 import hotelmania.group4.HotelManiaAgentNames;
+import hotelmania.group4.client.AskHotelmaniaForInformation;
 import hotelmania.group4.platform.OnDayEvent;
 import hotelmania.group4.utils.ProcessDescriptionFn;
 import hotelmania.group4.utils.SearchForAgent;
@@ -17,9 +18,10 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import jade.proto.SubscriptionInitiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 /**
  * @author Marek Lewandowski <marek.lewandowski@icompass.pl>
@@ -30,9 +32,9 @@ import org.slf4j.LoggerFactory;
 public class AgHotel4 extends HotelManiaAgent {
 
     public interface OnDone {
-        void done();
+        void done ();
 
-        void failed();
+        void failed ();
     }
 
     public static final String HOTEL_NAME = "Hotel4";
@@ -41,9 +43,9 @@ public class AgHotel4 extends HotelManiaAgent {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    private SubscriptionInitiator dayEventsNotificationSubscriptionInitiator;
-
     private int day;
+
+    private AID queryHotelmaniaInformation;
 
     @Override
     protected void setupHotelManiaAgent () {
@@ -52,9 +54,10 @@ public class AgHotel4 extends HotelManiaAgent {
 
         registerInYellowPages();
         registerInHotelmania();
+        findQueryHotelmaniaInformationAgent();
+
         subscribeToDayEvents();
 
-        // adding a behaviour for searching the bank
         createBankAccount(new OnDone() {
             @Override public void done () {
                 signContractWithAgency(); // TODO contract needs to be calculated
@@ -70,6 +73,21 @@ public class AgHotel4 extends HotelManiaAgent {
         addBehaviour(new RespondToNumberOfClients(this));
         addBehaviour(new BookingOfferBehaviour(this));
         addBehaviour(new BookingBehaviour(this));
+    }
+
+    private void findQueryHotelmaniaInformationAgent () {
+        addBehaviour(new SearchForAgent(HotelManiaAgentNames.QUERY_HOTELMANIA_INFORMATION, this, new ProcessDescriptionFn<Object>() {
+            @Override public <T> Optional<T> found (
+                    DFAgentDescription[] dfAgentDescriptions) throws Codec.CodecException, OntologyException {
+                if (dfAgentDescriptions.length > 1) {
+                    logger.error("More than 1 hotel mania agents found");
+                } else {
+                    final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
+                    queryHotelmaniaInformation = dfAgentDescription.getName();
+                }
+                return Optional.absent();
+            }
+        }));
     }
 
     private void registerInYellowPages () {
@@ -189,11 +207,22 @@ public class AgHotel4 extends HotelManiaAgent {
     private void subscribeToDayEvents () {
         final SubscribeToDayEvents subscribeToDayEvents = new SubscribeToDayEvents(this, new OnDayEvent() {
             @Override public void onDayEvent (NotificationDayEvent notificationDayEvent) {
-                day = notificationDayEvent.getDayEvent().getDay();
-                logger.info("Received new day event notification. Day {}", day);
+                dayEvent(notificationDayEvent);
             }
         });
         subscribeToDayEvents.doSubscription();
+    }
+
+    private void dayEvent (NotificationDayEvent notificationDayEvent) {
+        day = notificationDayEvent.getDayEvent().getDay();
+        logger.info("Received new day event notification. Day {}", day);
+
+        final AskHotelmaniaForInformation askHotelmaniaForInformation = new AskHotelmaniaForInformation(this, queryHotelmaniaInformation, new AskHotelmaniaForInformation.InformationReceived() {
+            @Override public void done (Set<HotelInformation> hotelInformation) {
+                logger.info("Received hotels information {}", hotelInformation);
+            }
+        });
+        addBehaviour(askHotelmaniaForInformation);
     }
 
     private void registerInHotelmania () {
@@ -204,7 +233,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     logger.error("More than 1 hotel mania agents found");
                 } else {
                     final DFAgentDescription dfAgentDescription = dfAgentDescriptions[0];
-                    final AID hotelmania = dfAgentDescription.getName();
+                    AID hotelmania = dfAgentDescription.getName();
 
                     ACLMessage msg = createMessage(hotelmania, ACLMessage.REQUEST);
                     msg.setProtocol(REGISTRATION);

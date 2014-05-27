@@ -8,6 +8,7 @@ import hotelmania.group4.settings.Settings;
 import hotelmania.group4.utils.EmseSubscriptionResponder;
 import hotelmania.group4.utils.Utils;
 import hotelmania.ontology.NotificationDayEvent;
+import hotelmania.ontology.NotificationEndSimulation;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.core.AID;
@@ -61,10 +62,7 @@ public class AgSimulator4 extends HotelManiaAgent {
             DFService.register(this, dfd);
             logger.info(getLocalName() + ": registered in the DF");
 
-            // Added for testing 2nd iteration Tests
             System.out.println(getLocalName() + ": registered in the DF");
-            //doWait(10000); // TEST!
-            // Wait 10 seconds for subscriptions
             System.out.println(getLocalName() + ": Waiting subscriptions ...");
 
         } catch (FIPAException e) {
@@ -97,6 +95,7 @@ public class AgSimulator4 extends HotelManiaAgent {
                 calendar.dayPassed();
                 if (simulationShouldEnd()) {
                     sendEndOfSimulationMessages();
+                    removeBehaviour(this);
                 } else {
                     final NotificationDayEvent notificationDayEvent = new NotificationDayEvent();
                     notificationDayEvent.setDayEvent(calendar.today());
@@ -127,9 +126,16 @@ public class AgSimulator4 extends HotelManiaAgent {
 
     private void sendEndOfSimulationMessages () {
         final Vector subscriptions = endOfSimulationSubscriptionResponder.getSubscriptions();
+        NotificationEndSimulation endSimulation = new NotificationEndSimulation();
         for (Object obj : subscriptions) {
             SubscriptionResponder.Subscription subscription = (SubscriptionResponder.Subscription) obj;
             final ACLMessage reply = subscription.getMessage().createReply();
+            try {
+                getContentManager().fillContent(reply, endSimulation);
+            } catch (Codec.CodecException | OntologyException e) {
+                throw new RuntimeException(e);
+            }
+
             reply.setPerformative(ACLMessage.INFORM);
             reply.setProtocol(END_SIMULATION);
             subscription.notify(reply);

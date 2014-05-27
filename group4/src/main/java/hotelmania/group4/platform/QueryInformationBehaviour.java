@@ -38,7 +38,7 @@ public class QueryInformationBehaviour extends EmseCyclicBehaviour {
     @Override protected List<MessageTemplate> getMessageTemplates () {
         final MessageTemplate withCodec = MessageTemplate.MatchLanguage(getHotelManiaAgent().getCodec().getName());
         final MessageTemplate withOntology = MessageTemplate.MatchOntology(getHotelManiaAgent().getOntology().getName());
-        final MessageTemplate withRequestPerformative = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+        final MessageTemplate withRequestPerformative = MessageTemplate.MatchPerformative(ACLMessage.QUERY_REF);
         final MessageTemplate withProtocolName = MessageTemplate.MatchProtocol(HotelManiaAgentNames.QUERY_HOTELMANIA_INFORMATION);
 
         return Arrays.asList(withCodec, withOntology, withRequestPerformative, withProtocolName);

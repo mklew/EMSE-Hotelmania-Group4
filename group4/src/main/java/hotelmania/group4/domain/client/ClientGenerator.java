@@ -28,23 +28,28 @@ public class ClientGenerator {
         final int simulationDays = settings.getSimulationDays();
 
         final int daysLeft = simulationDays - currentDay;
-        Preconditions.checkArgument(daysLeft > 0, "There should be days left");
+        if(daysLeft == 0) {
+            return new Client(randomBudget, currentDay, currentDay + 1);
+        }
+        else {
+            Preconditions.checkArgument(daysLeft > 0, "There should be days left. Current day is {} and days left {}", currentDay, daysLeft);
 
-        final Random random = new Random();
-        final int daysToCheckIn = random.nextInt(daysLeft + 1);
+            final Random random = new Random();
+            final int daysToCheckIn = random.nextInt(daysLeft + 1);
 
-        final int checkInDay = currentDay + daysToCheckIn;
+            final int checkInDay = currentDay + daysToCheckIn;
 
-        final int daysLeftAfterCheckIn = simulationDays - checkInDay;
+            final int daysLeftAfterCheckIn = simulationDays - checkInDay;
 
-        final int daysToBeAddedToCheckOut = random.nextInt(daysLeftAfterCheckIn + 1);
+            final int daysToBeAddedToCheckOut = random.nextInt(daysLeftAfterCheckIn + 1);
 
-        final int checkOutDay = Math.min(simulationDays + 1, checkInDay + daysToBeAddedToCheckOut) + 1;
+            final int checkOutDay = Math.min(simulationDays + 1, checkInDay + daysToBeAddedToCheckOut) + 1;
 
-        Preconditions.checkArgument(checkOutDay - checkInDay >= 1);
+            Preconditions.checkArgument(checkOutDay - checkInDay >= 1);
 
-        final int totalBudget = randomBudget * (checkOutDay - checkInDay);
+            final int totalBudget = randomBudget * (checkOutDay - checkInDay);
 
-        return new Client(totalBudget, checkInDay, checkOutDay);
+            return new Client(totalBudget, checkInDay, checkOutDay);
+        }
     }
 }

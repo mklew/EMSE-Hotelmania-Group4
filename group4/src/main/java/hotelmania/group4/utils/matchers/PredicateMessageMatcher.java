@@ -29,21 +29,26 @@ public class PredicateMessageMatcher<T> implements MessageProcessor<T> {
     }
 
     @Override public MessageStatus tryToHandle (ACLMessage message) {
-        try {
-            ContentElement content = agent.getContentManager().extractContent(message);
-            if (clazz.isInstance(content)) {
-                final T action = clazz.cast(content);
-                try {
-                    return handler.handle(action, message);
-                } catch (Exception e) {
-                    logger.debug("Error while handling message", e);
+        final int performative = message.getPerformative();
+        if (performative == ACLMessage.INFORM || performative == ACLMessage.QUERY_REF) {
+            try {
+                ContentElement content = agent.getContentManager().extractContent(message);
+                if (clazz.isInstance(content)) {
+                    final T action = clazz.cast(content);
+                    try {
+                        return handler.handle(action, message);
+                    } catch (Exception e) {
+                        logger.debug("Error while handling message", e);
+                        return MessageStatus.NOT_PROCESSED;
+                    }
+                } else {
                     return MessageStatus.NOT_PROCESSED;
                 }
-            } else {
+            } catch (Exception e) {
+                logger.debug("Error", e);
                 return MessageStatus.NOT_PROCESSED;
             }
-        } catch (Exception e) {
-            logger.debug("Error", e);
+        } else {
             return MessageStatus.NOT_PROCESSED;
         }
     }
