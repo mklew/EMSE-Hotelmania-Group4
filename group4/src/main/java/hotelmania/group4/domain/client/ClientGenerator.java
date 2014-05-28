@@ -29,27 +29,38 @@ public class ClientGenerator {
 
         final int daysLeft = simulationDays - currentDay;
         if(daysLeft == 0) {
-            return new Client(randomBudget, currentDay, currentDay + 1);
+            throw new RuntimeException("Cannot create client on last day of simulation");
         }
         else {
             Preconditions.checkArgument(daysLeft > 0, "There should be days left. Current day is {} and days left {}", currentDay, daysLeft);
 
-            final Random random = new Random();
-            final int daysToCheckIn = random.nextInt(daysLeft + 1);
+            if(daysLeft == 1) {
+                return new Client(randomBudget, currentDay, simulationDays);
+            }
+            else {
+                final Random random = new Random();
+                final int daysToCheckIn = random.nextInt(daysLeft);
 
-            final int checkInDay = currentDay + daysToCheckIn;
+                final int checkInDay = Math.min(simulationDays - 1, currentDay + daysToCheckIn);
 
-            final int daysLeftAfterCheckIn = simulationDays - checkInDay;
+                final int daysLeftAfterCheckIn = simulationDays - checkInDay;
 
-            final int daysToBeAddedToCheckOut = random.nextInt(daysLeftAfterCheckIn + 1);
+                final int daysToBeAddedToCheckOut = random.nextInt(daysLeftAfterCheckIn) + 1;
 
-            final int checkOutDay = Math.min(simulationDays + 1, checkInDay + daysToBeAddedToCheckOut) + 1;
+                int checkOutDay = 0;
+                if (checkInDay + daysToBeAddedToCheckOut > simulationDays) {
+                    checkOutDay = simulationDays;
+                } else {
+                    checkOutDay = checkInDay + daysToBeAddedToCheckOut;
+                }
+                Preconditions.checkArgument(checkOutDay <= simulationDays);
+                Preconditions.checkArgument(checkOutDay - checkInDay >= 1, "CheckoutDay {} checkInDay {}", checkOutDay, checkInDay);
 
-            Preconditions.checkArgument(checkOutDay - checkInDay >= 1);
+                final int totalBudget = randomBudget * (checkOutDay - checkInDay);
 
-            final int totalBudget = randomBudget * (checkOutDay - checkInDay);
+                return new Client(totalBudget, checkInDay, checkOutDay);
+            }
 
-            return new Client(totalBudget, checkInDay, checkOutDay);
         }
     }
 }

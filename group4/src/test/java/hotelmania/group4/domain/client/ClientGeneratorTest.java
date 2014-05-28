@@ -48,6 +48,7 @@ public class ClientGeneratorTest {
         final Client client = clientGenerator.generateClient(currentDay);
 
         assertThat(client.getCheckInDay() >= currentDay).isTrue();
-        assertThat(client.getCheckOutDay() <= SIMULATION_DAYS + 1).isTrue();
+        assertThat(client.getCheckInDay() < SIMULATION_DAYS).isTrue();
+        assertThat(client.getCheckOutDay() <= SIMULATION_DAYS).isTrue();
     }
 }

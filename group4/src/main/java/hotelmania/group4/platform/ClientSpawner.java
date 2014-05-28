@@ -30,10 +30,12 @@ public class ClientSpawner extends HotelManiaAgent {
 
         final SubscribeToDayEvents subscribeToDayEvents = new SubscribeToDayEvents(this, new OnDayEvent() {
             @Override public void onDayEvent (NotificationDayEvent notificationDayEvent) {
-                for (int i = 0; i < settings.getNumberOfNewClientsPerDay(); i++) {
-                    if (simulationIsOn) {
-                        String clientAgentName = getNewClientName();
-                        Utils.runAgent(ClientSpawner.this, clientAgentName, ClientAgent.class);
+                if(settings.getSimulationDays() - notificationDayEvent.getDayEvent().getDay() >= 1) {
+                    for (int i = 0; i < settings.getNumberOfNewClientsPerDay(); i++) {
+                        if (simulationIsOn) {
+                            String clientAgentName = getNewClientName();
+                            Utils.runAgent(ClientSpawner.this, clientAgentName, ClientAgent.class);
+                        }
                     }
                 }
             }
@@ -44,6 +46,7 @@ public class ClientSpawner extends HotelManiaAgent {
             @Override public void onEndOfSimulation () {
                 simulationIsOn = false;
                 subscribeToDayEvents.unsubscribe();
+                takeDown();
             }
         });
     }
