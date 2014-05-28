@@ -4,7 +4,7 @@
 
   <groupId>hotelmania</groupId>
   <artifactId>group4</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>group4</name>

@@ -42,7 +42,7 @@ public class InformAccountStatusBehaviour extends EmseCyclicBehaviour {
     @Override protected List<MessageTemplate> getMessageTemplates () {
         final MessageTemplate withCodec = MessageTemplate.MatchLanguage(bank.getCodec().getName());
         final MessageTemplate withOntology = MessageTemplate.MatchOntology(bank.getOntology().getName());
-        final MessageTemplate withRequestPerformative = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+        final MessageTemplate withRequestPerformative = MessageTemplate.MatchPerformative(ACLMessage.QUERY_REF);
 
         return Arrays.asList(withCodec, withOntology, withRequestPerformative);
     }
