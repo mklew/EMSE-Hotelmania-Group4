@@ -146,6 +146,7 @@ public class AgHotel4 extends HotelManiaAgent {
                     // making the account request and setting random the name of the hotel
                     Hotel hotel = new Hotel();
                     hotel.setHotel_name("Hotel4");
+                    hotel.setHotelAgent(getAID());
                     accountRequest.setHotel(hotel);
 
 
